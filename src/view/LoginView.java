@@ -1,6 +1,8 @@
 package view;
 
+import controller.LoginController;
 import model.Constants;
+import model.LoginModel;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -11,19 +13,45 @@ import javax.swing.JTextField;
 
 public class LoginView extends JFrame {
 
-    private JPanel PANEL_LOGIN;
-    private JPasswordField LOGIN_PASSWORD;
-    private JTextField LOGIN_USERNAME;
-    private JButton LOGIN_SIGNIN;
-    private JCheckBox LOGIN_REMEMBER;
+    LoginModel model = new LoginModel();
+    LoginController controller = new LoginController();
+
+    private JPanel panel;
+    private JPasswordField password;
+    private JTextField username;
+    private JButton signin;
+    private JCheckBox remember;
 
     public LoginView() {
         setTitle("Login | " + Constants.APP_NAME);
-        setContentPane(PANEL_LOGIN);
+        setContentPane(panel);
+        getRootPane().setDefaultButton(signin);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         setSize(500, 300);
-        setVisible(true);
         pack();
+
+        // View listeners
+        signin.addActionListener(actionEvent -> {
+            boolean valid = controller.login(getUsername(), getPassword());
+
+            if (valid) {
+                this.setVisible(false);
+                this.dispose();
+            }
+        });
+    }
+
+    public String getPassword() {
+        return String.valueOf(password.getPassword());
+    }
+
+    public String getUsername() {
+        return username.getText();
+    }
+
+    public JCheckBox getRemember() {
+        return remember;
     }
 }
