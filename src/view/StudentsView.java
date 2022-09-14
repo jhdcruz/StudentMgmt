@@ -7,26 +7,28 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-public class TableView extends JFrame {
+public class StudentsView extends JFrame {
     private JPanel PANEL_MAIN;
     private JTable TABLE_STUDENTS;
-    private JButton entryAdd;
     private JScrollPane TABLE_SCROLLPANE;
     private JPanel PANEL_TABLE;
     private JPanel CONTROL_PANEL;
+
     private JFormattedTextField entrySearch;
+    private JButton entryAdd;
     private JButton entryEdit;
     private JButton entryDelete;
     private JButton adminSignOut;
     private JButton adminButton;
 
-    public TableView() {
+    public StudentsView() {
         setTitle("Student Management");
         setContentPane(PANEL_MAIN);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        setSize(1000, 600);
+        setSize(900, 400);
+        setMinimumSize(getSize());
         pack();
     }
 }

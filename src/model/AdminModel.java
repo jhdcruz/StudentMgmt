@@ -4,10 +4,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
-public class LoginModel {
+@SuppressWarnings("unused")
+public class AdminModel {
     private String username;
     private String password;
+
+    private String firstName;
+    private String lastName;
+    private String middleName;
+
+    private Date dateCreated;
 
 
     private final String file = "src/db/logins.txt";

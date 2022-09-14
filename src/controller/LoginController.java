@@ -1,22 +1,22 @@
 package controller;
 
-import model.LoginModel;
+import model.AdminModel;
 import view.ErrorDialogView;
-import view.TableView;
+import view.StudentsView;
 
 import java.io.IOException;
 
 public class LoginController {
 
     public boolean login(String username, String password) {
-        LoginModel loginModel = new LoginModel();
-        TableView tableView = new TableView();
+        AdminModel adminModel = new AdminModel();
+        StudentsView studentsView = new StudentsView();
 
         try {
-            boolean login = loginModel.login(username, password);
+            boolean login = adminModel.login(username, password);
 
             if (login) {
-                tableView.setVisible(true);
+                studentsView.setVisible(true);
                 return true;
             } else {
                 new ErrorDialogView(new Exception("Invalid credentials"));

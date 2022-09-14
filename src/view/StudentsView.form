@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="view.TableView">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="view.StudentsView">
   <grid id="27dc6" binding="PANEL_MAIN" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="606" height="400"/>
@@ -32,6 +32,7 @@
               <component id="d08c8" class="javax.swing.JButton" binding="entryAdd">
                 <constraints/>
                 <properties>
+                  <horizontalAlignment value="0"/>
                   <text value="Add"/>
                   <toolTipText value="Add new student"/>
                 </properties>
@@ -76,7 +77,7 @@
                 <properties>
                   <columns value="30"/>
                   <focusLostBehavior value="3"/>
-                  <horizontalAlignment value="0"/>
+                  <horizontalAlignment value="10"/>
                   <text value=""/>
                   <toolTipText value="Search student"/>
                 </properties>
