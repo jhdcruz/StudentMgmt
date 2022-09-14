@@ -1,30 +1,30 @@
 package view;
 
-import model.Constants;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
+import javax.swing.JPanel;
 
-public class ErrorDialogView {
-
-    private static JDialog DIALOG;
+public class ErrorDialogView extends JDialog {
+    private JPanel contentPane;
+    private JButton close;
+    private JLabel errorMessage;
 
     public ErrorDialogView(Exception exception) {
+        setContentPane(contentPane);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        getRootPane().setDefaultButton(close);
 
-        JFrame frame = new JFrame();
-        DIALOG = new JDialog(frame, Constants.APP_NAME, true);
+        setTitle("Something went wrong...");
+        setLocationRelativeTo(null);
+        setSize(350, 150);
+        setVisible(true);
 
-        DIALOG.setLayout(new FlowLayout());
-        JButton closeButton = new JButton("Close");
+        errorMessage.setText(exception.getMessage());
 
-        closeButton.addActionListener(e -> ErrorDialogView.DIALOG.setVisible(true));
-
-        DIALOG.add(new JLabel(exception.getMessage()));
-        DIALOG.add(closeButton);
-        DIALOG.setSize(300, 300);
-        DIALOG.setVisible(true);
+        close.addActionListener(e -> {
+            this.setVisible(false);
+            this.dispose();
+        });
     }
 }
