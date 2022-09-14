@@ -23,8 +23,8 @@ public class ErrorDialogView extends JDialog {
         errorMessage.setText(exception.getMessage());
 
         close.addActionListener(e -> {
-            this.setVisible(false);
-            this.dispose();
+            setVisible(false);
+            dispose();
         });
     }
 }

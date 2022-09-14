@@ -37,8 +37,8 @@ public class LoginView extends JFrame {
             boolean valid = controller.login(getUsername(), getPassword());
 
             if (valid) {
-                this.setVisible(false);
-                this.dispose();
+                setVisible(false);
+                dispose();
             }
         });
     }
