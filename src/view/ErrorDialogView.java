@@ -18,6 +18,8 @@ public class ErrorDialogView extends JDialog {
         setTitle("Something went wrong...");
         setLocationRelativeTo(null);
         setSize(350, 150);
+
+        setResizable(false);
         setVisible(true);
 
         errorMessage.setText(exception.getMessage());
