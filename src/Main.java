@@ -8,10 +8,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Main {
 
     public static void main(String[] args) {
+
         SwingUtilities.invokeLater(() -> {
+            setLookAndFeel();
+
             try {
-                setLookAndFeel();
-                new LoginView();
+                LoginView loginView = new LoginView();
+                loginView.setVisible(true);
             } catch (Exception exception) {
                 new ErrorDialogView(exception);
             }
