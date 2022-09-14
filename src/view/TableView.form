@@ -16,95 +16,93 @@
           <size top="10" left="5" bottom="5" right="5"/>
         </border>
         <children>
-          <component id="bdb11" class="javax.swing.JFormattedTextField" binding="ENTRY_SEARCH">
+          <toolbar id="8a4dd">
             <constraints>
-              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="-1" height="20"/>
               </grid>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <columns value="30"/>
-              <text value=""/>
-              <toolTipText value="Search student"/>
+              <enabled value="false"/>
+              <floatable value="false"/>
             </properties>
-          </component>
-          <component id="22c4c" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <labelFor value="290fe"/>
-              <text value="Search: "/>
-            </properties>
-          </component>
-          <component id="268c5" class="javax.swing.JSeparator">
-            <constraints>
-              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="5" bottom="0" right="5" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <orientation value="1"/>
-            </properties>
-          </component>
-          <component id="39059" class="javax.swing.JButton" binding="adminSignOut">
-            <constraints>
-              <grid row="0" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="Sign Out"/>
-            </properties>
-          </component>
-          <component id="b941d" class="javax.swing.JButton" binding="adminButton">
-            <constraints>
-              <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="Admin"/>
-            </properties>
-          </component>
-          <component id="d08c8" class="javax.swing.JButton" binding="entryAdd">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="Add"/>
-              <toolTipText value="Add new student"/>
-            </properties>
-          </component>
-          <component id="42e23" class="javax.swing.JButton" binding="entryEdit">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="Edit"/>
-              <toolTipText value="Edit currently highlighted student"/>
-            </properties>
-          </component>
-          <component id="17999" class="javax.swing.JButton" binding="entryDelete">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="Delete"/>
-              <toolTipText value="Delete currently highlighted entries"/>
-            </properties>
-          </component>
-          <component id="5d8d3" class="javax.swing.JSeparator">
-            <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="5" bottom="0" right="5" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <orientation value="1"/>
-            </properties>
-          </component>
+            <border type="none"/>
+            <children>
+              <component id="d08c8" class="javax.swing.JButton" binding="entryAdd">
+                <constraints/>
+                <properties>
+                  <text value="Add"/>
+                  <toolTipText value="Add new student"/>
+                </properties>
+              </component>
+              <component id="42e23" class="javax.swing.JButton" binding="entryEdit">
+                <constraints/>
+                <properties>
+                  <text value="Edit"/>
+                  <toolTipText value="Edit currently highlighted student"/>
+                </properties>
+              </component>
+              <component id="17999" class="javax.swing.JButton" binding="entryDelete">
+                <constraints/>
+                <properties>
+                  <text value="Delete"/>
+                  <toolTipText value="Delete currently highlighted entries"/>
+                </properties>
+              </component>
+              <component id="a131c" class="javax.swing.JToolBar$Separator">
+                <constraints/>
+                <properties>
+                  <enabled value="false"/>
+                  <foreground color="-13750738"/>
+                  <separatorSize width="30" height="10"/>
+                </properties>
+              </component>
+              <component id="22c4c" class="javax.swing.JLabel">
+                <constraints/>
+                <properties>
+                  <enabled value="false"/>
+                  <foreground color="-10723485"/>
+                  <horizontalAlignment value="10"/>
+                  <labelFor value="bdb11"/>
+                  <text value="Search: "/>
+                </properties>
+              </component>
+              <hspacer id="80a92">
+                <constraints/>
+              </hspacer>
+              <component id="bdb11" class="javax.swing.JFormattedTextField" binding="entrySearch">
+                <constraints/>
+                <properties>
+                  <columns value="30"/>
+                  <focusLostBehavior value="3"/>
+                  <horizontalAlignment value="0"/>
+                  <text value=""/>
+                  <toolTipText value="Search student"/>
+                </properties>
+              </component>
+              <component id="2f98" class="javax.swing.JToolBar$Separator">
+                <constraints/>
+                <properties>
+                  <enabled value="false"/>
+                  <foreground color="-13750738"/>
+                  <separatorSize width="30" height="10"/>
+                </properties>
+              </component>
+              <component id="b941d" class="javax.swing.JButton" binding="adminButton">
+                <constraints/>
+                <properties>
+                  <text value="Admin"/>
+                </properties>
+              </component>
+              <component id="39059" class="javax.swing.JButton" binding="adminSignOut">
+                <constraints/>
+                <properties>
+                  <text value="Sign Out"/>
+                </properties>
+              </component>
+            </children>
+          </toolbar>
         </children>
       </grid>
       <grid id="6b9bf" binding="PANEL_TABLE" layout-manager="BorderLayout" hgap="0" vgap="0">

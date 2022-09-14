@@ -14,7 +14,7 @@ public class TableView extends JFrame {
     private JScrollPane TABLE_SCROLLPANE;
     private JPanel PANEL_TABLE;
     private JPanel CONTROL_PANEL;
-    private JFormattedTextField ENTRY_SEARCH;
+    private JFormattedTextField entrySearch;
     private JButton entryEdit;
     private JButton entryDelete;
     private JButton adminSignOut;
