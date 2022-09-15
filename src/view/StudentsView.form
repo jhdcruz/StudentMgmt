@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="view.StudentsView">
-  <grid id="27dc6" binding="PANEL_MAIN" layout-manager="BorderLayout" hgap="0" vgap="0">
+  <grid id="27dc6" binding="contentPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="606" height="400"/>
     </constraints>
@@ -90,10 +90,10 @@
                   <separatorSize width="30" height="10"/>
                 </properties>
               </component>
-              <component id="b941d" class="javax.swing.JButton" binding="adminButton">
+              <component id="b941d" class="javax.swing.JButton" binding="refresh">
                 <constraints/>
                 <properties>
-                  <text value="Admin"/>
+                  <text value="Refresh"/>
                 </properties>
               </component>
               <component id="39059" class="javax.swing.JButton" binding="adminSignOut">
@@ -113,14 +113,14 @@
           <size top="5" left="5" bottom="5" right="5"/>
         </border>
         <children>
-          <scrollpane id="290fe" binding="TABLE_SCROLLPANE">
+          <scrollpane id="290fe" binding="tableScrollPane">
             <constraints border-constraint="Center"/>
             <properties>
               <toolTipText value=""/>
             </properties>
             <border type="none"/>
             <children>
-              <component id="96142" class="javax.swing.JTable" binding="TABLE_STUDENTS">
+              <component id="96142" class="javax.swing.JTable" binding="studentsTable">
                 <constraints/>
                 <properties>
                   <autoCreateRowSorter value="true"/>

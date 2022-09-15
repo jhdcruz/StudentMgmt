@@ -11,33 +11,24 @@ import javax.swing.JTextField;
 
 public class LoginView extends JFrame {
 
-    LoginController loginController = new LoginController();
-
     private JPanel panel;
-    private JPasswordField password;
-    private JTextField username;
-    private JButton signin;
+    public JPasswordField password;
+    public JTextField username;
+    public JButton signIn;
 
     public LoginView() {
         setTitle("Login | " + Constants.APP_NAME);
         setContentPane(panel);
-        getRootPane().setDefaultButton(signin);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        getRootPane().setDefaultButton(signIn);
         setSize(350, 200);
         setMinimumSize(getSize());
         pack();
 
-        // View listeners
-        signin.addActionListener(actionEvent -> {
-            boolean valid = loginController.login(getUsername(), getPassword());
-
-            if (valid) {
-                setVisible(false);
-                dispose();
-            }
-        });
+        // init controller
+        new LoginController(this);
     }
 
     public String getPassword() {

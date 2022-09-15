@@ -4,14 +4,32 @@ import java.util.Date;
 
 @SuppressWarnings("unused")
 public class StudentModel {
+
+    private String id;
+    private String email;
     private String lastName;
     private String firstName;
     private String middleName;
     private String course;
     private int yearLevel;
     private String section;
+    private Date dateCreated;
 
-    private Date dateEnrolled;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getLastName() {
         return lastName;
@@ -59,5 +77,9 @@ public class StudentModel {
 
     public void setSection(String section) {
         this.section = section;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
     }
 }
