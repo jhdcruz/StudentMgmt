@@ -7,7 +7,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="4ae3e" binding="CONTROL_PANEL" layout-manager="GridBagLayout">
+      <grid id="4ae3e" layout-manager="GridBagLayout">
         <constraints border-constraint="North"/>
         <properties>
           <enabled value="true"/>
@@ -35,13 +35,6 @@
                   <horizontalAlignment value="0"/>
                   <text value="Add"/>
                   <toolTipText value="Add new student"/>
-                </properties>
-              </component>
-              <component id="42e23" class="javax.swing.JButton" binding="entryEdit">
-                <constraints/>
-                <properties>
-                  <text value="Edit"/>
-                  <toolTipText value="Edit currently highlighted student"/>
                 </properties>
               </component>
               <component id="17999" class="javax.swing.JButton" binding="entryDelete">
@@ -106,7 +99,7 @@
           </toolbar>
         </children>
       </grid>
-      <grid id="6b9bf" binding="PANEL_TABLE" layout-manager="BorderLayout" hgap="0" vgap="0">
+      <grid id="6b9bf" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="Center"/>
         <properties/>
         <border type="empty">

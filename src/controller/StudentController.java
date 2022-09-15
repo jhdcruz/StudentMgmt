@@ -27,7 +27,17 @@ public class StudentController {
         view.entryAdd.addActionListener(actionEvent -> newEntry(view.tableModel));
         view.entryDelete.addActionListener(actionEvent -> deleteEntries(view.tableModel, view.studentsTable));
         view.entrySearch.addActionListener(actionEvent -> searchEntries(view.tableModel, view.getEntrySearch()));
-        // view.entryEdit.addActionListener(actionEvent -> updateEntry(view.studentsTable));
+
+        // listen to table cell updates
+        view.tableModel.addTableModelListener(tableModelEvent -> updateEntry(view.studentsTable));
+
+        // disable cell editing on date created
+        view.studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return false;
+            }
+        });
 
         view.refresh.addActionListener(actionEvent -> refreshEntries(view.tableModel));
         view.adminSignOut.addActionListener(actionEvent -> signOut(view));
@@ -109,22 +119,33 @@ public class StudentController {
 
     /**
      * Update student data
+     * <p>
+     * Suppress duplicate code warning because it doesn't work with try-with-resources
      *
      * @param table table to get selected row and col to update
      */
+    @SuppressWarnings("DuplicatedCode")
     public void updateEntry(JTable table) {
         Runnable runnable = () -> {
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
 
+            File tmp;
             FileReader in;
+            FileWriter out;
             BufferedReader reader;
 
-            if (col != 0 && row != -1) {
-                try {
-                    in = new FileReader(Constants.DB_STUDENTS);
-                    reader = new BufferedReader(in);
+            try {
+                tmp = new File(Constants.DB_STUDENTS_TMP);
+                in = new FileReader(Constants.DB_STUDENTS);
+                out = new FileWriter(tmp, true);
+                reader = new BufferedReader(in);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
+            if (col != -1 && row != -1) {
+                try (in; out; reader) {
                     String line;
                     String[] studentEntry;
 
@@ -132,10 +153,17 @@ public class StudentController {
                     String value = table.getValueAt(row, col).toString();
 
                     while ((line = reader.readLine()) != null) {
-                        studentEntry = line.split(delimiter);
-                        if (studentEntry[0].equals(id)) {
+                        // copy all lines with the updated value
+                        if (line.contains(id)) {
+                            studentEntry = line.split(delimiter);
                             studentEntry[col] = value;
+                            out.write(String.join(delimiter, studentEntry) + System.lineSeparator());
                         }
+                    }
+
+                    // delete old file and rename tmp file
+                    if (!tmp.renameTo(new File(Constants.DB_STUDENTS))) {
+                        throw new RuntimeException("An error occurred while deleting student entries.");
                     }
                 } catch (Exception e) {
                     new ErrorDialogView(new Exception("An error occurred while updating student data."));
@@ -146,6 +174,20 @@ public class StudentController {
         new Thread(runnable).start();
     }
 
+    /**
+     * Delete student entries
+     * <p>
+     * It is not possible to dynamically delete lines from a text file
+     * So we have to copy all lines except the ones we want to delete
+     * to a temporary file and then rename it to the original file.
+     * <p>
+     * Suppress duplicate code warning because it doesn't work with try-with-resources
+     *
+     * @param tableModel table model for `removeRow()`
+     * @param table      table to get selected rows
+     * @see <a href="https://stackoverflow.com/a/5800618/16171990">Deleting lines from a file</a>
+     */
+    @SuppressWarnings("DuplicatedCode")
     public void deleteEntries(DefaultTableModel tableModel, JTable table) {
         Runnable runnable = () -> {
             File tmp;
@@ -167,10 +209,6 @@ public class StudentController {
                 try (in; out; reader) {
                     String line;
 
-                    // WORKAROUND:
-                    // It is not possible to remove a line from a text file
-                    // So we're going to copy all the lines except the ones we want to delete
-                    // Source: https://stackoverflow.com/a/5800618/16171990 among many others...
                     while ((line = reader.readLine()) != null) {
                         // copy all lines except the ones that matches the id of the selected rows
                         String finalLine = line;

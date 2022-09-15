@@ -7,15 +7,12 @@ import javax.swing.table.DefaultTableModel;
 
 public class StudentsView extends JFrame {
     private JPanel contentPane;
-    private JPanel PANEL_TABLE;
-    private JPanel CONTROL_PANEL;
-
     public JTable studentsTable;
     public DefaultTableModel tableModel;
     public JScrollPane tableScrollPane;
+
     public JFormattedTextField entrySearch;
     public JButton entryAdd;
-    public JButton entryEdit;
     public JButton entryDelete;
     public JButton adminSignOut;
     public JButton refresh;
