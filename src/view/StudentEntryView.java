@@ -12,6 +12,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.table.DefaultTableModel;
 
 public class StudentEntryView extends JDialog {
     public JPanel contentPane;
@@ -26,7 +27,7 @@ public class StudentEntryView extends JDialog {
     public JComboBox<String> course;
     public JTextField section;
 
-    public StudentEntryView() {
+    public StudentEntryView(DefaultTableModel tableModel) {
         setTitle("Add Student | " + Constants.APP_NAME);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setContentPane(contentPane);
@@ -44,7 +45,7 @@ public class StudentEntryView extends JDialog {
         course.setModel(new DefaultComboBoxModel<>(courses));
 
         // Listeners
-        new StudentEntryController(this);
+        new StudentEntryController(this, tableModel);
     }
 
     public String getId() {
@@ -64,7 +65,7 @@ public class StudentEntryView extends JDialog {
     }
 
     public String getCourse() {
-        return course.getName();
+        return (String) course.getSelectedItem();
     }
 
     public String getNameMiddle() {

@@ -5,19 +5,20 @@ import model.StudentModel;
 import view.ErrorDialogView;
 import view.StudentEntryView;
 
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyEvent;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
 
 public class StudentEntryController {
 
-    // TODO: Thread status notifier
-    @SuppressWarnings("FieldCanBeLocal")
     private Thread studentEntryThread;
+    private Object[] newStudentRow;
 
-    public StudentEntryController(StudentEntryView view) {
+    public StudentEntryController(StudentEntryView view, DefaultTableModel tableModel) {
         // Listeners
         view.entrySubmit.addActionListener(actionEvent -> {
             StudentModel newStudent = new StudentModel();
@@ -32,8 +33,22 @@ public class StudentEntryController {
             newStudent.setSection(view.getSection());
             newStudent.setEmail(view.getEmail());
 
+            // set current time & date
+            newStudent.setDateCreated(new Date());
+
             try {
                 addEntry(newStudent);
+
+                // this assumes entry was successful, errors in adding
+                // entry is handled inside `addEntry()` itself.
+                view.dispose();
+
+                try {
+                    studentEntryThread.join();
+                    tableModel.addRow(Arrays.stream(newStudentRow).toArray());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } catch (IOException e) {
                 new ErrorDialogView(new Exception("An error occurred while submitting student entry.\n" + e.getMessage()));
             }
@@ -46,15 +61,22 @@ public class StudentEntryController {
 
     /**
      * Add a new student to the database (students.txt)
+     * This runs in a thread to avoid blocking the UI
      *
      * @param newStudent instance of a StudentModel
      */
     public void addEntry(StudentModel newStudent) throws IOException {
         Runnable write = () -> {
-            String delimiter = Constants.DELIMITER;
+            // This is used for adding a new row to the table manually
+            // we run this in a thread to avoid blocking the UI.
+            newStudentRow = new Object[]{newStudent.getId(), newStudent.getEmail(), newStudent.getLastName(), newStudent.getFirstName(), newStudent.getMiddleName(), newStudent.getCourse(), newStudent.getYearLevel(), newStudent.getSection(), newStudent.getDateCreated()};
 
             try (FileWriter out = new FileWriter(Constants.DB_STUDENTS, true)) {
-                out.write(newStudent.getId() + delimiter + newStudent.getEmail() + delimiter + newStudent.getLastName() + delimiter + newStudent.getFirstName() + delimiter + newStudent.getMiddleName() + delimiter + newStudent.getCourse() + delimiter + newStudent.getYearLevel() + delimiter + newStudent.getSection() + delimiter + newStudent.getDateCreated());
+                String delimiter = Constants.DELIMITER;
+                // IMPORTANT: this assumes that the data is already validated
+                //            this also assumes that the order is correct and
+                //            aligned with the table headers in the `StudentsView`
+                out.write(newStudent.getId() + delimiter + newStudent.getEmail() + delimiter + newStudent.getLastName() + delimiter + newStudent.getFirstName() + delimiter + newStudent.getMiddleName() + delimiter + newStudent.getCourse() + delimiter + newStudent.getYearLevel() + delimiter + newStudent.getSection() + delimiter + newStudent.getDateCreated() + "\n");
             } catch (IOException e) {
                 new ErrorDialogView(new Exception("An error occurred while adding a new student entry."));
             }

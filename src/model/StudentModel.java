@@ -2,7 +2,6 @@ package model;
 
 import java.util.Date;
 
-@SuppressWarnings("unused")
 public class StudentModel {
 
     private String id;
@@ -81,5 +80,9 @@ public class StudentModel {
 
     public Date getDateCreated() {
         return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
     }
 }

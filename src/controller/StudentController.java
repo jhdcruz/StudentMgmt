@@ -6,6 +6,7 @@ import view.LoginView;
 import view.StudentEntryView;
 import view.StudentsView;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,22 +15,29 @@ import java.io.IOException;
 
 public class StudentController {
 
-    // TODO: Thread status notifier
-    @SuppressWarnings("FieldCanBeLocal")
-    private Thread studentsThread;
+    private final String delimiter = Constants.DELIMITER;
 
     public StudentController(StudentsView view) {
-        // Table Listeners
-        view.entryAdd.addActionListener(actionEvent -> newEntry());
+        // fetch students on load
+        try {
+            getEntries(view.tableModel);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // listeners
+        view.entryAdd.addActionListener(actionEvent -> newEntry(view.tableModel));
         view.refresh.addActionListener(actionEvent -> refreshEntries(view.tableModel));
         view.adminSignOut.addActionListener(actionEvent -> signOut(view));
     }
 
     /**
      * Show modal dialog for adding new student entry
+     *
+     * @param tableModel table access for manual entry insertion
      */
-    public void newEntry() {
-        StudentEntryView studentEntryView = new StudentEntryView();
+    public void newEntry(DefaultTableModel tableModel) {
+        StudentEntryView studentEntryView = new StudentEntryView(tableModel);
         studentEntryView.setVisible(true);
     }
 
@@ -52,7 +60,6 @@ public class StudentController {
             }
 
             try (in; reader) {
-                String delimiter = Constants.DELIMITER;
                 String line;
                 String[] studentEntry;
 
@@ -65,8 +72,50 @@ public class StudentController {
             }
         };
 
-        studentsThread = new Thread(runnable);
-        studentsThread.start();
+        new Thread(runnable).start();
+    }
+
+    /**
+     * Update student data
+     *
+     * @param table table to get selected row and col to update
+     */
+    public void updateEntry(JTable table) {
+        Runnable runnable = () -> {
+            int row = table.getSelectedRow();
+            int col = table.getSelectedColumn();
+
+            FileReader in;
+            BufferedReader reader;
+
+            try {
+                in = new FileReader(Constants.DB_STUDENTS);
+                reader = new BufferedReader(in);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (col != 0 && row != -1) {
+                try {
+                    String line;
+                    String[] studentEntry;
+
+                    String id = table.getValueAt(row, 0).toString();
+                    String value = table.getValueAt(row, col).toString();
+
+                    while ((line = reader.readLine()) != null) {
+                        studentEntry = line.split(delimiter);
+                        if (studentEntry[0].equals(id)) {
+                            studentEntry[col] = value;
+                        }
+                    }
+                } catch (Exception e) {
+                    new ErrorDialogView(new Exception("An error occurred while updating student data."));
+                }
+            }
+        };
+
+        new Thread(runnable).start();
     }
 
     /**

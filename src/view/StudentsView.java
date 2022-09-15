@@ -2,12 +2,7 @@ package view;
 
 import controller.StudentController;
 
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class StudentsView extends JFrame {
@@ -39,9 +34,7 @@ public class StudentsView extends JFrame {
         tableModel = new DefaultTableModel(null, tableHeaders);
         studentsTable.setModel(tableModel);
 
-
         // init controllers
         new StudentController(this);
-
     }
 }
