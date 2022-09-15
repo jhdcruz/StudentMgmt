@@ -87,12 +87,14 @@
                 <constraints/>
                 <properties>
                   <text value="Refresh"/>
+                  <toolTipText value="Refetch data from the txt file"/>
                 </properties>
               </component>
               <component id="39059" class="javax.swing.JButton" binding="adminSignOut">
                 <constraints/>
                 <properties>
                   <text value="Sign Out"/>
+                  <toolTipText value="Return to login form"/>
                 </properties>
               </component>
             </children>
