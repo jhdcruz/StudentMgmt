@@ -5,7 +5,8 @@ import model.StudentModel;
 import view.ErrorDialogView;
 import view.StudentEntryView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyEvent;
 import java.io.FileWriter;

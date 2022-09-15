@@ -37,4 +37,8 @@ public class StudentsView extends JFrame {
         // init controllers
         new StudentController(this);
     }
+
+    public String getEntrySearch() {
+        return entrySearch.getText();
+    }
 }

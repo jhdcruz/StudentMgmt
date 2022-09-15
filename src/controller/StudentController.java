@@ -8,10 +8,8 @@ import view.StudentsView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.stream.IntStream;
 
 public class StudentController {
 
@@ -27,8 +25,46 @@ public class StudentController {
 
         // listeners
         view.entryAdd.addActionListener(actionEvent -> newEntry(view.tableModel));
+        view.entryDelete.addActionListener(actionEvent -> deleteEntries(view.tableModel, view.studentsTable));
+        view.entrySearch.addActionListener(actionEvent -> searchEntries(view.tableModel, view.getEntrySearch()));
+        // view.entryEdit.addActionListener(actionEvent -> updateEntry(view.studentsTable));
+
         view.refresh.addActionListener(actionEvent -> refreshEntries(view.tableModel));
         view.adminSignOut.addActionListener(actionEvent -> signOut(view));
+    }
+
+    /**
+     * Filter entries by search query
+     *
+     * @param tableModel table model
+     * @param query      search query
+     */
+    private void searchEntries(DefaultTableModel tableModel, String query) {
+        Runnable runnable = () -> {
+            FileReader in;
+            BufferedReader reader;
+
+            try {
+                in = new FileReader(Constants.DB_STUDENTS);
+                reader = new BufferedReader(in);
+
+                tableModel.setRowCount(0);
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    String[] data = line.split(delimiter);
+
+                    // Look for matches in all columns except the date
+                    if (IntStream.of(0, 1, 2, 3, 4, 5, 6, 7).anyMatch(i -> data[i].contains(query))) {
+                        tableModel.addRow(data);
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        new Thread(runnable).start();
     }
 
     /**
@@ -55,11 +91,7 @@ public class StudentController {
             try {
                 in = new FileReader(Constants.DB_STUDENTS);
                 reader = new BufferedReader(in);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
 
-            try (in; reader) {
                 String line;
                 String[] studentEntry;
 
@@ -88,15 +120,11 @@ public class StudentController {
             FileReader in;
             BufferedReader reader;
 
-            try {
-                in = new FileReader(Constants.DB_STUDENTS);
-                reader = new BufferedReader(in);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-
             if (col != 0 && row != -1) {
                 try {
+                    in = new FileReader(Constants.DB_STUDENTS);
+                    reader = new BufferedReader(in);
+
                     String line;
                     String[] studentEntry;
 
@@ -111,6 +139,57 @@ public class StudentController {
                     }
                 } catch (Exception e) {
                     new ErrorDialogView(new Exception("An error occurred while updating student data."));
+                }
+            }
+        };
+
+        new Thread(runnable).start();
+    }
+
+    public void deleteEntries(DefaultTableModel tableModel, JTable table) {
+        Runnable runnable = () -> {
+            File tmp;
+            FileReader in;
+            FileWriter out;
+            BufferedReader reader;
+
+            try {
+                tmp = new File(Constants.DB_STUDENTS_TMP);
+                in = new FileReader(Constants.DB_STUDENTS);
+                out = new FileWriter(tmp, true);
+                reader = new BufferedReader(in);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            int[] selectedRows = table.getSelectedRows();
+            if (selectedRows != null) {
+                try (in; out; reader) {
+                    String line;
+
+                    // WORKAROUND:
+                    // It is not possible to remove a line from a text file
+                    // So we're going to copy all the lines except the ones we want to delete
+                    // Source: https://stackoverflow.com/a/5800618/16171990 among many others...
+                    while ((line = reader.readLine()) != null) {
+                        // copy all lines except the ones that matches the id of the selected rows
+                        String finalLine = line;
+                        if (IntStream.of(selectedRows).noneMatch(i -> finalLine.split(delimiter)[0].equals(table.getValueAt(i, 0).toString()))) {
+                            out.write(line + System.lineSeparator());
+                        }
+                    }
+
+                    // remove selected rows from the table
+                    for (int i = selectedRows.length - 1; i >= 0; i--) {
+                        tableModel.removeRow(selectedRows[i]);
+                    }
+
+                    // delete old file and rename tmp file
+                    if (!tmp.renameTo(new File(Constants.DB_STUDENTS))) {
+                        throw new RuntimeException("An error occurred while deleting student entries.");
+                    }
+                } catch (Exception e) {
+                    new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
                 }
             }
         };
