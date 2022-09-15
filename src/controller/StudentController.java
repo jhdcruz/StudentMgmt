@@ -1,7 +1,6 @@
 package controller;
 
 import model.Constants;
-import model.StudentModel;
 import view.ErrorDialogView;
 import view.LoginView;
 import view.StudentEntryView;
@@ -9,11 +8,15 @@ import view.StudentsView;
 
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class StudentController {
-    StudentModel studentModel = new StudentModel();
+
+    // TODO: Thread status notifier
+    @SuppressWarnings("FieldCanBeLocal")
+    private Thread studentsThread;
 
     public StudentController(StudentsView view) {
         // Table Listeners
@@ -30,15 +33,27 @@ public class StudentController {
         studentEntryView.setVisible(true);
     }
 
+    /**
+     * Get student entries from file and add to table
+     * this runs on a thread, presumably helps for large lists
+     *
+     * @param tableModel table model for `addRow()`
+     */
     public void getEntries(DefaultTableModel tableModel) throws IOException {
-        FileReader in = new FileReader(Constants.DB_STUDENTS);
-        BufferedReader reader = new BufferedReader(in);
-
-        // Run data fetching in a thread, presumably helps for large data
         Runnable runnable = () -> {
+            FileReader in;
+            BufferedReader reader;
+
+            try {
+                in = new FileReader(Constants.DB_STUDENTS);
+                reader = new BufferedReader(in);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
             try (in; reader) {
-                String line;
                 String delimiter = Constants.DELIMITER;
+                String line;
                 String[] studentEntry;
 
                 while ((line = reader.readLine()) != null) {
@@ -50,7 +65,8 @@ public class StudentController {
             }
         };
 
-        runnable.run();
+        studentsThread = new Thread(runnable);
+        studentsThread.start();
     }
 
     /**
@@ -77,7 +93,5 @@ public class StudentController {
         studentsView.dispose();
 
         new LoginView().setVisible(true);
-
     }
 }
-

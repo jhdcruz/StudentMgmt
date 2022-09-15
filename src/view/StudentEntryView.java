@@ -19,11 +19,12 @@ public class StudentEntryView extends JDialog {
     public JButton entryCancel;
     public JTextField id;
     public JTextField nameFirst;
+    public JTextField nameMiddle;
+    public JTextField nameLast;
     public JTextField email;
     public JSpinner yearLevel;
     public JComboBox<String> course;
-    public JTextField nameMiddle;
-    public JTextField nameLast;
+    public JTextField section;
 
     public StudentEntryView() {
         setTitle("Add Student | " + Constants.APP_NAME);
@@ -44,5 +45,37 @@ public class StudentEntryView extends JDialog {
 
         // Listeners
         new StudentEntryController(this);
+    }
+
+    public String getId() {
+        return id.getText();
+    }
+
+    public String getNameFirst() {
+        return nameFirst.getText();
+    }
+
+    public String getEmail() {
+        return email.getText();
+    }
+
+    public int getYearLevel() {
+        return (int) yearLevel.getValue();
+    }
+
+    public String getCourse() {
+        return course.getName();
+    }
+
+    public String getNameMiddle() {
+        return nameMiddle.getText();
+    }
+
+    public String getNameLast() {
+        return nameLast.getText();
+    }
+
+    public String getSection() {
+        return section.getText();
     }
 }

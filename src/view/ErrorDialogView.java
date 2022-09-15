@@ -1,9 +1,7 @@
 package view;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class ErrorDialogView extends JDialog {
     private JPanel contentPane;
@@ -28,5 +26,7 @@ public class ErrorDialogView extends JDialog {
             setVisible(false);
             dispose();
         });
+        contentPane.registerKeyboardAction(actionEvent -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
     }
 }
