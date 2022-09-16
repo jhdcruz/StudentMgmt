@@ -1,6 +1,7 @@
 # Compiled class file
 *.class
 out/
+!out/artifacts/*
 
 # Log file
 *.log
