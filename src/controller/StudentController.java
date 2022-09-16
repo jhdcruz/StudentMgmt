@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 
 public class StudentController {
 
-    StudentsView view;
+    private final StudentsView view;
 
     private final String delimiter = Constants.DELIMITER;
 
@@ -260,56 +260,59 @@ public class StudentController {
     @SuppressWarnings("DuplicatedCode")
     public void deleteEntries() {
 
-        JOptionPane.showConfirmDialog(view, "This action permanently deletes a record, it will be unrecoverable.", "Delete Student Records?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        int proceed = JOptionPane.showConfirmDialog(view, "This action permanently deletes records, these actions are irreversible.", "Delete student records?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
-        Runnable runnable = () -> {
-            JTable table = view.studentsTable;
-            int[] selectedRows = table.getSelectedRows();
+        if (proceed == JOptionPane.YES_OPTION) {
+            Runnable runnable = () -> {
+                JTable table = view.studentsTable;
+                int[] selectedRows = table.getSelectedRows();
 
-            if (selectedRows != null) {
-                File tmp;
-                File db;
-                FileReader in;
-                FileWriter out;
-                BufferedReader reader;
+                if (selectedRows != null) {
+                    File tmp;
+                    File db;
+                    FileReader in;
+                    FileWriter out;
+                    BufferedReader reader;
 
-                try {
-                    tmp = new File(Constants.DB_STUDENTS_TMP);
-                    db = new File(Constants.DB_STUDENTS);
+                    try {
+                        tmp = new File(Constants.DB_STUDENTS_TMP);
+                        db = new File(Constants.DB_STUDENTS);
 
-                    in = new FileReader(db);
-                    out = new FileWriter(tmp, true);
-                    reader = new BufferedReader(in);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                        in = new FileReader(db);
+                        out = new FileWriter(tmp, true);
+                        reader = new BufferedReader(in);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                try (in; out; reader) {
-                    String line;
+                    try (in; out; reader) {
+                        String line;
 
-                    while ((line = reader.readLine()) != null) {
-                        // copy all lines except the ones that matches the id of the selected rows
-                        String finalLine = line;
-                        if (IntStream.of(selectedRows).noneMatch(i -> finalLine.split(delimiter)[0].equals(table.getValueAt(i, 0).toString()))) {
-                            out.write(line + System.lineSeparator());
+                        while ((line = reader.readLine()) != null) {
+                            // copy all lines except the ones that matches the id of the selected rows
+                            String finalLine = line;
+                            if (IntStream.of(selectedRows).noneMatch(i -> finalLine.split(delimiter)[0].equals(table.getValueAt(i, 0).toString()))) {
+                                out.write(line + System.lineSeparator());
+                            }
                         }
-                    }
 
-                    // remove selected rows from the table
-                    for (int i = selectedRows.length - 1; i >= 0; i--) {
-                        view.tableModel.removeRow(selectedRows[i]);
-                    }
-                } catch (Exception e) {
-                    new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
-                } finally {
-                    // delete old file and rename tmp file
-                    //noinspection ResultOfMethodCallIgnored
-                    tmp.renameTo(new File(Constants.DB_STUDENTS));
-                }
-            }
-        };
+                        // remove selected rows from the table
+                        for (int i = selectedRows.length - 1; i >= 0; i--) {
+                            view.tableModel.removeRow(selectedRows[i]);
+                        }
+                    } catch (Exception e) {
+                        new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
+                    } finally {
+                        // delete old file and rename tmp file
+                        //noinspection ResultOfMethodCallIgnored
+                        tmp.renameTo(new File(Constants.DB_STUDENTS));
 
-        new Thread(runnable).start();
+                    } // file ops
+                } // if selectedRows != null
+            }; // runnable
+
+            new Thread(runnable).start();
+        } // if proceed == JOptionPane.YES_OPTION
     }
 
     /**
@@ -326,10 +329,14 @@ public class StudentController {
      * Dispose the main UI and show the login UI
      */
     public void signOut() {
-        view.setVisible(false);
-        view.dispose();
+        int proceed = JOptionPane.showConfirmDialog(view, "Are you sure you want to sign out?", "Sign out?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-        new LoginView().setVisible(true);
+        if (proceed == JOptionPane.YES_OPTION) {
+            view.dispose();
+
+            new LoginView().setVisible(true);
+        }
+
     }
 
     /**

@@ -11,10 +11,7 @@ import java.io.IOException;
 
 public class LoginController {
 
-    LoginView view;
-
     public LoginController(LoginView view) {
-        this.view = view;
 
         view.signIn.addActionListener(actionEvent -> {
             boolean valid;

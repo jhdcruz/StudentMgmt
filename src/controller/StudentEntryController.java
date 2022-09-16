@@ -19,13 +19,16 @@ import java.util.Locale;
 
 public class StudentEntryController {
 
+    private final StudentEntryView view;
     private Object[] newStudentRow;
 
     public StudentEntryController(StudentEntryView view, DefaultTableModel tableModel) {
+        this.view = view;
+
         // Listeners
         view.entrySubmit.addActionListener(actionEvent -> {
             StudentModel newStudent = new StudentModel();
-            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK);
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
             // grab input data from view
             newStudent.setId(generateStudentId());
@@ -41,7 +44,7 @@ public class StudentEntryController {
             newStudent.setDateCreated(dateFormat.format(new Date()));
 
             try {
-                if (validateEntry(view)) {
+                if (validateEntry()) {
                     addEntry(newStudent);
 
                     view.dispose();
@@ -68,7 +71,7 @@ public class StudentEntryController {
      * instead of one at a time
      */
     @SuppressWarnings("UnusedAssignment")
-    public boolean validateEntry(StudentEntryView view) {
+    public boolean validateEntry() {
         boolean email = false;
         boolean section = false;
         boolean name = false;
