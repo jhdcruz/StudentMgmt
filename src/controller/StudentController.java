@@ -10,6 +10,8 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,7 +37,24 @@ public class StudentController {
         // entry addition & modifications
         view.entryAdd.addActionListener(actionEvent -> newEntry(view.tableModel));
         view.entryDelete.addActionListener(actionEvent -> deleteEntries(view.tableModel, view.studentsTable));
-        view.entrySearch.addActionListener(actionEvent -> searchEntries(view.tableModel, view.getEntrySearch()));
+
+        // listen for changes in the search field and filter the table
+        view.entrySearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                searchEntries(view.tableModel, view.getEntrySearch());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                searchEntries(view.tableModel, view.getEntrySearch());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                searchEntries(view.tableModel, view.getEntrySearch());
+            }
+        });
 
         // listen to table cell updates
         view.tableModel.addTableModelListener(tableModelEvent -> updateEntry(view.studentsTable));
