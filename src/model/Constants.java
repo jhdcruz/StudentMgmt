@@ -7,9 +7,9 @@ public class Constants {
 
     // Database
     public static final String DELIMITER = ",";
-    public static final String DB_ADMINS = "src/db/admins.txt";
-    public static final String DB_STUDENTS = "src/db/students.txt";
-    public static final String DB_STUDENTS_TMP = "src/db/students.tmp";
+    public static final String DB_ADMINS = "src/model/admins.txt";
+    public static final String DB_STUDENTS = "src/model/students.txt";
+    public static final String DB_STUDENTS_TMP = "src/model/students.tmp";
 
     // Table
     public static final Object[] TABLE_HEADERS = {"ID #", "Email", "Last Name", "First Name", "Middle Name", "Course", "Year Level", "Section", "Date Created"};
