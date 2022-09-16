@@ -72,7 +72,7 @@ public class StudentController {
      * @param tableModel table model
      * @param query      search query
      */
-    private void searchEntries(DefaultTableModel tableModel, String query) {
+    public void searchEntries(DefaultTableModel tableModel, String query) {
         Runnable runnable = () -> {
             FileReader in;
             BufferedReader reader;
@@ -207,13 +207,16 @@ public class StudentController {
 
         Runnable runnable = () -> {
             File tmp;
+            File db;
             FileReader in;
             FileWriter out;
             BufferedReader reader;
 
             try {
                 tmp = new File(Constants.DB_STUDENTS_TMP);
-                in = new FileReader(Constants.DB_STUDENTS);
+                db = new File(Constants.DB_STUDENTS);
+
+                in = new FileReader(db);
                 out = new FileWriter(tmp, true);
                 reader = new BufferedReader(in);
             } catch (IOException e) {
@@ -238,7 +241,8 @@ public class StudentController {
                     }
 
                     // delete old file and rename tmp file
-                    if (!tmp.renameTo(new File(Constants.DB_STUDENTS))) {
+                    // fix: windows doesn't allow renaming a file if it already exists
+                    if (db.delete() && !tmp.renameTo(new File(Constants.DB_STUDENTS))) {
                         throw new RuntimeException("An error occurred while deleting student entries.");
                     }
                 } catch (Exception e) {
