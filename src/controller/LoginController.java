@@ -17,13 +17,9 @@ public class LoginController {
         this.view = view;
 
         view.signIn.addActionListener(actionEvent -> {
-            boolean valid = false;
+            boolean valid;
 
-            try {
-                valid = login(view.getUsername(), view.getPassword());
-            } catch (IOException e) {
-                new ErrorDialogView(new Exception("An error occurred while logging in."));
-            }
+            valid = login(view.getUsername(), view.getPassword());
 
             if (valid) {
                 view.setVisible(false);
@@ -39,13 +35,16 @@ public class LoginController {
      * @param password password to be validated
      * @return `true` if credentials are correct, else `false`
      */
-    public boolean login(String username, String password) throws IOException {
+    public boolean login(String username, String password) {
         StudentsView studentsView = new StudentsView();
 
-        FileReader in = new FileReader(Constants.DB_ADMINS);
-        BufferedReader reader = new BufferedReader(in);
+        FileReader in;
+        BufferedReader reader;
 
-        try (in; reader) {
+        try {
+            in = new FileReader(Constants.DB_ADMINS);
+            reader = new BufferedReader(in);
+
             String line;
             boolean valid = false;
 
