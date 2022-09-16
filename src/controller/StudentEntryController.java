@@ -19,7 +19,6 @@ import java.util.Locale;
 
 public class StudentEntryController {
 
-    private Thread studentEntryThread;
     private Object[] newStudentRow;
 
     public StudentEntryController(StudentEntryView view, DefaultTableModel tableModel) {
@@ -167,7 +166,6 @@ public class StudentEntryController {
             }
         };
 
-        studentEntryThread = new Thread(write);
-        studentEntryThread.start();
+        new Thread(write).start();
     }
 }
