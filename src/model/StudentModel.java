@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Date;
-
 public class StudentModel {
 
     private String id;
@@ -12,7 +10,7 @@ public class StudentModel {
     private String course;
     private int yearLevel;
     private String section;
-    private Date dateCreated;
+    private String dateCreated;
 
     public String getId() {
         return id;
@@ -78,11 +76,11 @@ public class StudentModel {
         this.section = section;
     }
 
-    public Date getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 }

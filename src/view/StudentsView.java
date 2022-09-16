@@ -1,6 +1,7 @@
 package view;
 
 import controller.StudentController;
+import model.Constants;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,8 +28,7 @@ public class StudentsView extends JFrame {
         setMinimumSize(getSize());
         pack();
 
-        Object[] tableHeaders = {"ID #", "Email", "Last Name", "First Name", "Middle Name", "Course", "Year Level", "Section", "Date Created"};
-        tableModel = new DefaultTableModel(null, tableHeaders);
+        tableModel = new DefaultTableModel(null, Constants.TABLE_HEADERS);
         studentsTable.setModel(tableModel);
 
         // init controllers

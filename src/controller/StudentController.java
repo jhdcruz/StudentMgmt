@@ -8,7 +8,11 @@ import view.StudentsView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.stream.IntStream;
 
 public class StudentController {
@@ -23,7 +27,9 @@ public class StudentController {
             throw new RuntimeException(e);
         }
 
-        // listeners
+        // LISTENERS -----------------------------------
+
+        // entry addition & modifications
         view.entryAdd.addActionListener(actionEvent -> newEntry(view.tableModel));
         view.entryDelete.addActionListener(actionEvent -> deleteEntries(view.tableModel, view.studentsTable));
         view.entrySearch.addActionListener(actionEvent -> searchEntries(view.tableModel, view.getEntrySearch()));
@@ -31,13 +37,30 @@ public class StudentController {
         // listen to table cell updates
         view.tableModel.addTableModelListener(tableModelEvent -> updateEntry(view.studentsTable));
 
-        // disable cell editing on date created
+        // disable cell editing on date created (col 8)
         view.studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
             @Override
             public boolean isCellEditable(java.util.EventObject event) {
                 return false;
             }
         });
+
+        // make table cell 5 a combo box of available courses
+        view.studentsTable.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(new JComboBox<>(Constants.ENTRY_COURSES)) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return true;
+            }
+        });
+
+        // make table cell 6 a spinner for year level
+        view.studentsTable.getColumnModel().getColumn(6).setCellEditor(new DefaultCellEditor(new JComboBox<>(Constants.ENTRY_YEAR_LEVELS)) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return true;
+            }
+        });
+
 
         view.refresh.addActionListener(actionEvent -> refreshEntries(view.tableModel));
         view.adminSignOut.addActionListener(actionEvent -> signOut(view));
@@ -77,15 +100,6 @@ public class StudentController {
         new Thread(runnable).start();
     }
 
-    /**
-     * Show modal dialog for adding new student entry
-     *
-     * @param tableModel table access for manual entry insertion
-     */
-    public void newEntry(DefaultTableModel tableModel) {
-        StudentEntryView studentEntryView = new StudentEntryView(tableModel);
-        studentEntryView.setVisible(true);
-    }
 
     /**
      * Get student entries from file and add to table
@@ -189,6 +203,8 @@ public class StudentController {
      */
     @SuppressWarnings("DuplicatedCode")
     public void deleteEntries(DefaultTableModel tableModel, JTable table) {
+        int[] selectedRows = table.getSelectedRows();
+
         Runnable runnable = () -> {
             File tmp;
             FileReader in;
@@ -204,7 +220,6 @@ public class StudentController {
                 throw new RuntimeException(e);
             }
 
-            int[] selectedRows = table.getSelectedRows();
             if (selectedRows != null) {
                 try (in; out; reader) {
                     String line;
@@ -259,5 +274,15 @@ public class StudentController {
         studentsView.dispose();
 
         new LoginView().setVisible(true);
+    }
+
+    /**
+     * Show modal dialog for adding new student entry
+     *
+     * @param tableModel table access for manual entry insertion
+     */
+    public void newEntry(DefaultTableModel tableModel) {
+        StudentEntryView studentEntryView = new StudentEntryView(tableModel);
+        studentEntryView.setVisible(true);
     }
 }
