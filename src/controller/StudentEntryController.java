@@ -26,7 +26,7 @@ public class StudentEntryController {
         // Listeners
         view.entrySubmit.addActionListener(actionEvent -> {
             StudentModel newStudent = new StudentModel();
-            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK);
 
             // grab input data from view
             newStudent.setId(generateStudentId());
@@ -42,17 +42,11 @@ public class StudentEntryController {
             newStudent.setDateCreated(dateFormat.format(new Date()));
 
             try {
-                addEntry(newStudent);
+                if (validateEntry(view)) {
+                    addEntry(newStudent);
 
-                // this assumes entry was successful, errors in adding
-                // entry is handled inside `addEntry()` itself.
-                view.dispose();
-
-                try {
-                    studentEntryThread.join();
+                    view.dispose();
                     tableModel.addRow(Arrays.stream(newStudentRow).toArray());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             } catch (IOException e) {
                 new ErrorDialogView(new Exception("An error occurred while submitting student entry.\n" + e.getMessage()));
@@ -65,12 +59,86 @@ public class StudentEntryController {
     }
 
     /**
+     * Validate form inputs
+     * <p>
+     * suppress unused warning for name variable
+     * since were using it for validation for all
+     * name fields instead of individual variables
+     * <p>
+     * separate ifs to show all invalid inputs at once
+     * instead of one at a time
+     */
+    @SuppressWarnings("UnusedAssignment")
+    public boolean validateEntry(StudentEntryView view) {
+        boolean email = false;
+        boolean section = false;
+        boolean name = false;
+
+        if (view.getEmail().isEmpty()) {
+            view.emptyEmail.setText("Email is required.");
+        } else if (!view.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            view.emptyEmail.setText("Invalid email address.");
+        } else {
+            email = true;
+            view.emptyEmail.setText("");
+        }
+
+        if (view.getNameFirst().isEmpty()) {
+            //noinspection ConstantConditions
+            name = false;
+            view.emptyNameFirst.setText("First name is required.");
+        } else if (!view.getNameFirst().matches("^[A-Za-z]+$")) {
+            //noinspection ConstantConditions
+            name = false;
+            view.emptyNameFirst.setText("Invalid first name.");
+        } else {
+            name = true;
+            view.emptyNameFirst.setText("");
+        }
+
+        if (view.getNameMiddle().isEmpty()) {
+            name = false;
+            view.emptyNameMiddle.setText("Middle name is required.");
+        } else if (!view.getNameMiddle().matches("^[A-Za-z]+$")) {
+            name = false;
+            view.emptyNameMiddle.setText("Invalid middle name.");
+        } else {
+            name = true;
+            view.emptyNameMiddle.setText("");
+        }
+
+        if (view.getNameLast().isEmpty()) {
+            name = false;
+            view.emptyNameLast.setText("Last name is required.");
+        } else if (!view.getNameLast().matches("^[A-Za-z]+$")) {
+            name = false;
+            view.emptyNameLast.setText("Invalid last name.");
+        } else {
+            name = true;
+            view.emptyNameLast.setText("");
+        }
+
+        if (view.getSection().isEmpty()) {
+            view.emptySection.setText("Section is required.");
+        } else if (!view.getSection().matches("^[A-Za-z0-9]+$")) {
+            view.emptySection.setText("Invalid section.");
+        } else {
+            section = true;
+            view.emptySection.setText("");
+        }
+
+        // return true if all fields are valid
+        return email && name && section;
+    }
+
+    /**
      * Generate student ID
      */
     public String generateStudentId() {
         // get current year
         String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
 
+        // append 4 random numbers to year
         return year + String.format("%04d", (int) (Math.random() * 10000));
     }
 
@@ -88,9 +156,11 @@ public class StudentEntryController {
 
             try (FileWriter out = new FileWriter(Constants.DB_STUDENTS, true)) {
                 String delimiter = Constants.DELIMITER;
-                // IMPORTANT: this assumes that the data is already validated
-                //            this also assumes that the order is correct and
-                //            aligned with the table headers in the `StudentsView`
+                // IMPORTANT: Make sure this is in the same order as the table columns
+                //            located in Constants.TABLE_HEADERS which is used for
+                //            manually adding data rows to the table.
+                //            Although refreshing the table will automatically fix
+                //            the order, it's better to keep it consistent.
                 out.write(newStudent.getId() + delimiter + newStudent.getEmail() + delimiter + newStudent.getLastName() + delimiter + newStudent.getFirstName() + delimiter + newStudent.getMiddleName() + delimiter + newStudent.getCourse() + delimiter + newStudent.getYearLevel() + delimiter + newStudent.getSection() + delimiter + newStudent.getDateCreated() + "\n");
             } catch (IOException e) {
                 new ErrorDialogView(new Exception("An error occurred while adding a new student entry."));

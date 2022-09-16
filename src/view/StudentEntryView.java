@@ -7,6 +7,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -16,14 +17,21 @@ public class StudentEntryView extends JDialog {
     public JPanel contentPane;
     public JButton entrySubmit;
     public JButton entryCancel;
-    public JTextField id;
+
     public JTextField nameFirst;
     public JTextField nameMiddle;
     public JTextField nameLast;
     public JTextField email;
+    public JTextField section;
+
     public JComboBox<String> yearLevel;
     public JComboBox<String> course;
-    public JTextField section;
+
+    public JLabel emptySection;
+    public JLabel emptyNameLast;
+    public JLabel emptyNameMiddle;
+    public JLabel emptyNameFirst;
+    public JLabel emptyEmail;
 
     public StudentEntryView(DefaultTableModel tableModel) {
         setTitle("Add Student | " + Constants.APP_NAME);
@@ -31,8 +39,11 @@ public class StudentEntryView extends JDialog {
         setContentPane(contentPane);
         setModalityType(ModalityType.APPLICATION_MODAL);
 
-        getRootPane().setDefaultButton(entrySubmit);
+        setSize(400, 520);
+        setMinimumSize(getSize());
         pack();
+
+        getRootPane().setDefaultButton(entrySubmit);
 
         // Limit year level values
         yearLevel.setModel(new DefaultComboBoxModel<>(Constants.ENTRY_YEAR_LEVELS));
