@@ -8,11 +8,9 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
+import java.util.Objects;
 
 public class StudentEntryView extends JDialog {
     public JPanel contentPane;
@@ -23,7 +21,7 @@ public class StudentEntryView extends JDialog {
     public JTextField nameMiddle;
     public JTextField nameLast;
     public JTextField email;
-    public JSpinner yearLevel;
+    public JComboBox<String> yearLevel;
     public JComboBox<String> course;
     public JTextField section;
 
@@ -37,19 +35,13 @@ public class StudentEntryView extends JDialog {
         pack();
 
         // Limit year level values
-        SpinnerModel value = new SpinnerNumberModel(1, 1, 4, 1);
-        yearLevel.setModel(value);
+        yearLevel.setModel(new DefaultComboBoxModel<>(Constants.ENTRY_YEAR_LEVELS));
 
         // available courses
-        String[] courses = {"BSIT", "BSCS", "BSIS", "BSDSA", "BSEMC"};
-        course.setModel(new DefaultComboBoxModel<>(courses));
+        course.setModel(new DefaultComboBoxModel<>(Constants.ENTRY_COURSES));
 
         // Listeners
         new StudentEntryController(this, tableModel);
-    }
-
-    public String getId() {
-        return id.getText();
     }
 
     public String getNameFirst() {
@@ -61,7 +53,7 @@ public class StudentEntryView extends JDialog {
     }
 
     public int getYearLevel() {
-        return (int) yearLevel.getValue();
+        return Integer.parseInt((String) Objects.requireNonNull(yearLevel.getSelectedItem()));
     }
 
     public String getCourse() {

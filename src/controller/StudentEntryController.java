@@ -11,8 +11,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyEvent;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class StudentEntryController {
 
@@ -23,9 +26,10 @@ public class StudentEntryController {
         // Listeners
         view.entrySubmit.addActionListener(actionEvent -> {
             StudentModel newStudent = new StudentModel();
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
 
             // grab input data from view
-            newStudent.setId(view.id.getText());
+            newStudent.setId(generateStudentId());
             newStudent.setFirstName(view.getNameFirst());
             newStudent.setMiddleName(view.getNameMiddle());
             newStudent.setLastName(view.getNameLast());
@@ -34,8 +38,8 @@ public class StudentEntryController {
             newStudent.setSection(view.getSection());
             newStudent.setEmail(view.getEmail());
 
-            // set current time & date
-            newStudent.setDateCreated(new Date());
+            // set current time & date with format
+            newStudent.setDateCreated(dateFormat.format(new Date()));
 
             try {
                 addEntry(newStudent);
@@ -58,6 +62,16 @@ public class StudentEntryController {
         view.entryCancel.addActionListener(actionEvent -> view.dispose());
         // close on ESCAPE key
         view.contentPane.registerKeyboardAction(actionEvent -> view.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+    /**
+     * Generate student ID
+     */
+    public String generateStudentId() {
+        // get current year
+        String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+
+        return year + String.format("%04d", (int) (Math.random() * 10000));
     }
 
     /**
