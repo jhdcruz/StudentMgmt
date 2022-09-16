@@ -6,13 +6,13 @@ import view.LoginView;
 import view.StudentEntryView;
 import view.StudentsView;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -22,37 +22,37 @@ import java.util.stream.IntStream;
 
 public class StudentController {
 
+    StudentsView view;
+
     private final String delimiter = Constants.DELIMITER;
 
     public StudentController(StudentsView view) {
+        this.view = view;
+
         // fetch students on load
-        try {
-            getEntries(view.tableModel);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        getEntries(view.tableModel);
 
         // LISTENERS -----------------------------------
 
         // entry addition & modifications
-        view.entryAdd.addActionListener(actionEvent -> newEntry(view.tableModel));
-        view.entryDelete.addActionListener(actionEvent -> deleteEntries(view.tableModel, view.studentsTable));
+        view.entryAdd.addActionListener(actionEvent -> newEntry());
+        view.entryDelete.addActionListener(actionEvent -> deleteEntries());
 
         // listen for changes in the search field and filter the table
         view.entrySearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent documentEvent) {
-                searchEntries(view.tableModel, view.getEntrySearch());
+                searchEntries();
             }
 
             @Override
             public void removeUpdate(DocumentEvent documentEvent) {
-                searchEntries(view.tableModel, view.getEntrySearch());
+                searchEntries();
             }
 
             @Override
             public void changedUpdate(DocumentEvent documentEvent) {
-                searchEntries(view.tableModel, view.getEntrySearch());
+                searchEntries();
             }
         });
 
@@ -83,18 +83,55 @@ public class StudentController {
             }
         });
 
+        // Table popup menu (context menu)
+        view.popupMenu.addPopupMenuListener(new PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                // Automatically select row and col where popup menu is called
+                // Skip when multiple rows are already selected
+                if (view.studentsTable.getSelectedRowCount() == 1) {
+                    Point p = view.studentsTable.getMousePosition();
 
-        view.refresh.addActionListener(actionEvent -> refreshEntries(view.tableModel));
-        view.adminSignOut.addActionListener(actionEvent -> signOut(view));
+                    if (p != null) {
+                        int rowNumber = view.studentsTable.rowAtPoint(p);
+                        int colNumber = view.studentsTable.columnAtPoint(p);
+                        view.studentsTable.setRowSelectionInterval(rowNumber, rowNumber);
+                        view.studentsTable.setColumnSelectionInterval(colNumber, colNumber);
+                    }
+                }
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                // Ignore, auto-generated required method stub
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                // Ignore, auto-generated required method stub
+            }
+        });
+
+        // delete entries from popup menu
+        view.popupMenuDelete.addActionListener(actionEvent -> deleteEntries());
+        // edit/update entry from popup menu
+        view.popupMenuEdit.addActionListener(actionEvent -> {
+            // get row and col from right-clicked cell
+            int row = view.studentsTable.getSelectedRow();
+            int col = view.studentsTable.getSelectedColumn();
+
+            view.studentsTable.editCellAt(row, col);
+        });
+
+        // refresh the table
+        view.refresh.addActionListener(actionEvent -> refreshEntries());
+        // go back to login
+        view.adminSignOut.addActionListener(actionEvent -> signOut());
     }
 
     /**
      * Filter entries by search query
-     *
-     * @param tableModel table model
-     * @param query      search query
      */
-    public void searchEntries(DefaultTableModel tableModel, String query) {
+    public void searchEntries() {
         Runnable runnable = () -> {
             FileReader in;
             BufferedReader reader;
@@ -103,15 +140,15 @@ public class StudentController {
                 in = new FileReader(Constants.DB_STUDENTS);
                 reader = new BufferedReader(in);
 
-                tableModel.setRowCount(0);
+                view.tableModel.setRowCount(0);
                 String line;
 
                 while ((line = reader.readLine()) != null) {
                     String[] data = line.split(delimiter);
 
                     // Look for matches in all columns except the date
-                    if (IntStream.of(0, 1, 2, 3, 4, 5, 6, 7).anyMatch(i -> data[i].contains(query))) {
-                        tableModel.addRow(data);
+                    if (IntStream.of(0, 1, 2, 3, 4, 5, 6, 7).anyMatch(i -> data[i].contains(view.getEntrySearch()))) {
+                        view.tableModel.addRow(data);
                     }
                 }
             } catch (IOException e) {
@@ -129,7 +166,7 @@ public class StudentController {
      *
      * @param tableModel table model for `addRow()`
      */
-    public void getEntries(DefaultTableModel tableModel) throws IOException {
+    public void getEntries(DefaultTableModel tableModel) {
         Runnable runnable = () -> {
             FileReader in;
             BufferedReader reader;
@@ -166,21 +203,21 @@ public class StudentController {
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
 
-            File tmp;
-            FileReader in;
-            FileWriter out;
-            BufferedReader reader;
-
-            try {
-                tmp = new File(Constants.DB_STUDENTS_TMP);
-                in = new FileReader(Constants.DB_STUDENTS);
-                out = new FileWriter(tmp, true);
-                reader = new BufferedReader(in);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
             if (col != -1 && row != -1) {
+                File tmp;
+                FileReader in;
+                FileWriter out;
+                BufferedReader reader;
+
+                try {
+                    tmp = new File(Constants.DB_STUDENTS_TMP);
+                    in = new FileReader(Constants.DB_STUDENTS);
+                    out = new FileWriter(tmp, true);
+                    reader = new BufferedReader(in);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 try (in; out; reader) {
                     String line;
                     String[] studentEntry;
@@ -196,13 +233,12 @@ public class StudentController {
                             out.write(String.join(delimiter, studentEntry) + System.lineSeparator());
                         }
                     }
-
-                    // delete old file and rename tmp file
-                    if (!tmp.renameTo(new File(Constants.DB_STUDENTS))) {
-                        throw new RuntimeException("An error occurred while deleting student entries.");
-                    }
                 } catch (Exception e) {
                     new ErrorDialogView(new Exception("An error occurred while updating student data."));
+                } finally {
+                    // delete old file and rename tmp file
+                    //noinspection ResultOfMethodCallIgnored
+                    tmp.renameTo(new File(Constants.DB_STUDENTS));
                 }
             }
         };
@@ -219,33 +255,35 @@ public class StudentController {
      * <p>
      * Suppress duplicate code warning because it doesn't work with try-with-resources
      *
-     * @param tableModel table model for `removeRow()`
-     * @param table      table to get selected rows
      * @see <a href="https://stackoverflow.com/a/5800618/16171990">Deleting lines from a file</a>
      */
     @SuppressWarnings("DuplicatedCode")
-    public void deleteEntries(DefaultTableModel tableModel, JTable table) {
-        int[] selectedRows = table.getSelectedRows();
+    public void deleteEntries() {
+
+        JOptionPane.showConfirmDialog(view, "This action permanently deletes a record, it will be unrecoverable.", "Delete Student Records?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
         Runnable runnable = () -> {
-            File tmp;
-            File db;
-            FileReader in;
-            FileWriter out;
-            BufferedReader reader;
-
-            try {
-                tmp = new File(Constants.DB_STUDENTS_TMP);
-                db = new File(Constants.DB_STUDENTS);
-
-                in = new FileReader(db);
-                out = new FileWriter(tmp, true);
-                reader = new BufferedReader(in);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            JTable table = view.studentsTable;
+            int[] selectedRows = table.getSelectedRows();
 
             if (selectedRows != null) {
+                File tmp;
+                File db;
+                FileReader in;
+                FileWriter out;
+                BufferedReader reader;
+
+                try {
+                    tmp = new File(Constants.DB_STUDENTS_TMP);
+                    db = new File(Constants.DB_STUDENTS);
+
+                    in = new FileReader(db);
+                    out = new FileWriter(tmp, true);
+                    reader = new BufferedReader(in);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 try (in; out; reader) {
                     String line;
 
@@ -259,16 +297,14 @@ public class StudentController {
 
                     // remove selected rows from the table
                     for (int i = selectedRows.length - 1; i >= 0; i--) {
-                        tableModel.removeRow(selectedRows[i]);
-                    }
-
-                    // delete old file and rename tmp file
-                    // fix: windows doesn't allow renaming a file if it already exists
-                    if (db.delete() && !tmp.renameTo(new File(Constants.DB_STUDENTS))) {
-                        throw new RuntimeException("An error occurred while deleting student entries.");
+                        view.tableModel.removeRow(selectedRows[i]);
                     }
                 } catch (Exception e) {
                     new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
+                } finally {
+                    // delete old file and rename tmp file
+                    //noinspection ResultOfMethodCallIgnored
+                    tmp.renameTo(new File(Constants.DB_STUDENTS));
                 }
             }
         };
@@ -278,37 +314,29 @@ public class StudentController {
 
     /**
      * Refetch student data from the .txt file
-     *
-     * @param tableModel table model to be updated
      */
-    public void refreshEntries(DefaultTableModel tableModel) {
-        try {
-            tableModel.setRowCount(0);
-            getEntries(tableModel);
-        } catch (IOException e) {
-            new ErrorDialogView(new Exception("An error occurred while refreshing student entries."));
-        }
+    public void refreshEntries() {
+        DefaultTableModel tableModel = view.tableModel;
+
+        tableModel.setRowCount(0);
+        getEntries(tableModel);
     }
 
     /**
      * Dispose the main UI and show the login UI
-     *
-     * @param studentsView the main table UI (studentsView)
      */
-    public void signOut(StudentsView studentsView) {
-        studentsView.setVisible(false);
-        studentsView.dispose();
+    public void signOut() {
+        view.setVisible(false);
+        view.dispose();
 
         new LoginView().setVisible(true);
     }
 
     /**
      * Show modal dialog for adding new student entry
-     *
-     * @param tableModel table access for manual entry insertion
      */
-    public void newEntry(DefaultTableModel tableModel) {
-        StudentEntryView studentEntryView = new StudentEntryView(tableModel);
+    public void newEntry() {
+        StudentEntryView studentEntryView = new StudentEntryView(view.tableModel);
         studentEntryView.setVisible(true);
     }
 }
