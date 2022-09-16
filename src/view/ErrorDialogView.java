@@ -1,6 +1,11 @@
 package view;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 
 public class ErrorDialogView extends JDialog {
