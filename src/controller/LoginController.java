@@ -36,6 +36,7 @@ public class LoginController {
         StudentsView studentsView = new StudentsView();
 
         try (FileReader in = new FileReader(Constants.DB_ADMINS); BufferedReader reader = new BufferedReader(in)) {
+
             String line;
             boolean valid = false;
 

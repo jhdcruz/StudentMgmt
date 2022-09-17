@@ -7,10 +7,7 @@ import view.StudentEntryView;
 import view.StudentsView;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
+import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Point;
 import java.io.BufferedReader;
@@ -23,8 +20,10 @@ import java.util.stream.IntStream;
 public class StudentController {
 
     private final StudentsView view;
+    private final TableModelListener tableListener = this::updateEntry;
 
     private final String delimiter = Constants.DELIMITER;
+
 
     public StudentController(StudentsView view) {
         this.view = view;
@@ -57,7 +56,7 @@ public class StudentController {
         });
 
         // listen to table cell updates
-        view.tableModel.addTableModelListener(tableModelEvent -> updateEntry(view.studentsTable));
+        view.tableModel.addTableModelListener(tableListener);
 
         // disable cell editing on date created (col 8)
         view.studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
@@ -183,12 +182,12 @@ public class StudentController {
      * Update student data
      * <p>
      * Suppress duplicate code warning because it doesn't work with try-with-resources
-     *
-     * @param table table to get selected row and col to update
      */
     @SuppressWarnings("DuplicatedCode")
-    public void updateEntry(JTable table) {
+    public void updateEntry(TableModelEvent tableEvent) {
         Runnable runnable = () -> {
+            JTable table = view.studentsTable;
+
             int row = table.getSelectedRow();
             int col = table.getSelectedColumn();
 
@@ -255,10 +254,16 @@ public class StudentController {
 
                         // delete old file and rename tmp file
                         if (new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS))) {
+                            // temporarily remove table listener for rows removal
+                            view.tableModel.removeTableModelListener(tableListener);
+
                             // remove selected rows from the table
                             for (int i = selectedRows.length - 1; i >= 0; i--) {
                                 view.tableModel.removeRow(selectedRows[i]);
                             }
+
+                            // re-add table listener
+                            view.tableModel.addTableModelListener(tableListener);
                         }
                     } catch (Exception e) {
                         new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
