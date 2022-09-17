@@ -35,19 +35,13 @@ public class LoginController {
     public boolean login(String username, String password) {
         StudentsView studentsView = new StudentsView();
 
-        FileReader in;
-        BufferedReader reader;
-
-        try {
-            in = new FileReader(Constants.DB_ADMINS);
-            reader = new BufferedReader(in);
-
+        try (FileReader in = new FileReader(Constants.DB_ADMINS); BufferedReader reader = new BufferedReader(in)) {
             String line;
             boolean valid = false;
 
             // check if credentials are correct
             while ((line = reader.readLine()) != null) {
-                String delimiter = ",";
+                String delimiter = Constants.DELIMITER;
                 String[] credentials = line.split(delimiter);
 
                 valid = (credentials[0].equals(username) && credentials[1].equals(password));

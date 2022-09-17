@@ -133,16 +133,11 @@ public class StudentController {
      */
     public void searchEntries() {
         Runnable runnable = () -> {
-            FileReader in;
-            BufferedReader reader;
-
-            try {
-                in = new FileReader(Constants.DB_STUDENTS);
-                reader = new BufferedReader(in);
-
+            try (FileReader in = new FileReader(Constants.DB_STUDENTS); BufferedReader reader = new BufferedReader(in)) {
+                // reset table to give way for matched entries
                 view.tableModel.setRowCount(0);
-                String line;
 
+                String line;
                 while ((line = reader.readLine()) != null) {
                     String[] data = line.split(delimiter);
 
@@ -168,13 +163,7 @@ public class StudentController {
      */
     public void getEntries(DefaultTableModel tableModel) {
         Runnable runnable = () -> {
-            FileReader in;
-            BufferedReader reader;
-
-            try {
-                in = new FileReader(Constants.DB_STUDENTS);
-                reader = new BufferedReader(in);
-
+            try (FileReader in = new FileReader(Constants.DB_STUDENTS); BufferedReader reader = new BufferedReader(in)) {
                 String line;
                 String[] studentEntry;
 
@@ -204,21 +193,7 @@ public class StudentController {
             int col = table.getSelectedColumn();
 
             if (col != -1 && row != -1) {
-                File tmp;
-                FileReader in;
-                FileWriter out;
-                BufferedReader reader;
-
-                try {
-                    tmp = new File(Constants.DB_STUDENTS_TMP);
-                    in = new FileReader(Constants.DB_STUDENTS);
-                    out = new FileWriter(tmp, true);
-                    reader = new BufferedReader(in);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                try (in; out; reader) {
+                try (FileReader in = new FileReader(Constants.DB_STUDENTS); FileWriter out = new FileWriter(Constants.DB_STUDENTS_TMP, true); BufferedReader reader = new BufferedReader(in)) {
                     String line;
                     String[] studentEntry;
 
@@ -226,19 +201,19 @@ public class StudentController {
                     String value = table.getValueAt(row, col).toString();
 
                     while ((line = reader.readLine()) != null) {
-                        // copy all lines with the updated value
+                        // copy all lines with the updated value in tmp file
                         if (line.contains(id)) {
                             studentEntry = line.split(delimiter);
                             studentEntry[col] = value;
                             out.write(String.join(delimiter, studentEntry) + System.lineSeparator());
                         }
                     }
-                } catch (Exception e) {
-                    new ErrorDialogView(new Exception("An error occurred while updating student data."));
-                } finally {
+
                     // delete old file and rename tmp file
                     //noinspection ResultOfMethodCallIgnored
-                    tmp.renameTo(new File(Constants.DB_STUDENTS));
+                    new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS));
+                } catch (Exception e) {
+                    new ErrorDialogView(new Exception("An error occurred while updating student data."));
                 }
             }
         };
@@ -259,7 +234,6 @@ public class StudentController {
      */
     @SuppressWarnings("DuplicatedCode")
     public void deleteEntries() {
-
         int proceed = JOptionPane.showConfirmDialog(view, "This action permanently deletes records, these actions are irreversible.", "Delete student records?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
         if (proceed == JOptionPane.YES_OPTION) {
@@ -268,46 +242,27 @@ public class StudentController {
                 int[] selectedRows = table.getSelectedRows();
 
                 if (selectedRows != null) {
-                    File tmp;
-                    File db;
-                    FileReader in;
-                    FileWriter out;
-                    BufferedReader reader;
-
-                    try {
-                        tmp = new File(Constants.DB_STUDENTS_TMP);
-                        db = new File(Constants.DB_STUDENTS);
-
-                        in = new FileReader(db);
-                        out = new FileWriter(tmp, true);
-                        reader = new BufferedReader(in);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    try (in; out; reader) {
+                    try (FileReader in = new FileReader(Constants.DB_STUDENTS); FileWriter out = new FileWriter(Constants.DB_STUDENTS_TMP, true); BufferedReader reader = new BufferedReader(in)) {
                         String line;
 
                         while ((line = reader.readLine()) != null) {
                             // copy all lines except the ones that matches the id of the selected rows
                             String finalLine = line;
-                            if (IntStream.of(selectedRows).noneMatch(i -> finalLine.split(delimiter)[0].equals(table.getValueAt(i, 0).toString()))) {
+                            if (IntStream.of(selectedRows).noneMatch(i -> finalLine.contains(table.getValueAt(i, 0).toString()))) {
                                 out.write(line + System.lineSeparator());
                             }
                         }
 
-                        // remove selected rows from the table
-                        for (int i = selectedRows.length - 1; i >= 0; i--) {
-                            view.tableModel.removeRow(selectedRows[i]);
+                        // delete old file and rename tmp file
+                        if (new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS))) {
+                            // remove selected rows from the table
+                            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                                view.tableModel.removeRow(selectedRows[i]);
+                            }
                         }
                     } catch (Exception e) {
                         new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
-                    } finally {
-                        // delete old file and rename tmp file
-                        //noinspection ResultOfMethodCallIgnored
-                        tmp.renameTo(new File(Constants.DB_STUDENTS));
-
-                    } // file ops
+                    }
                 } // if selectedRows != null
             }; // runnable
 
