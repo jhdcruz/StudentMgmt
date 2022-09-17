@@ -58,29 +58,6 @@ public class StudentController {
         // listen to table cell updates
         view.tableModel.addTableModelListener(tableListener);
 
-        // disable cell editing on date created (col 8)
-        view.studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
-            @Override
-            public boolean isCellEditable(java.util.EventObject event) {
-                return false;
-            }
-        });
-
-        // make table cell 5 a combo box of available courses
-        view.studentsTable.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(new JComboBox<>(Constants.ENTRY_COURSES)) {
-            @Override
-            public boolean isCellEditable(java.util.EventObject event) {
-                return true;
-            }
-        });
-
-        // make table cell 6 a spinner for year level
-        view.studentsTable.getColumnModel().getColumn(6).setCellEditor(new DefaultCellEditor(new JComboBox<>(Constants.ENTRY_YEAR_LEVELS)) {
-            @Override
-            public boolean isCellEditable(java.util.EventObject event) {
-                return true;
-            }
-        });
 
         // Table popup menu (context menu)
         view.popupMenu.addPopupMenuListener(new PopupMenuListener() {

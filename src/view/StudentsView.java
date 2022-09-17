@@ -45,6 +45,30 @@ public class StudentsView extends JFrame {
         popupMenu.add(popupMenuEdit);
         popupMenu.add(popupMenuDelete);
 
+        // disable cell editing on date created (col 8)
+        studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return false;
+            }
+        });
+
+        // make table cell 5 a combo box of available courses
+        studentsTable.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(new JComboBox<>(Constants.ENTRY_COURSES)) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return true;
+            }
+        });
+
+        // make table cell 6 a spinner for year level
+        studentsTable.getColumnModel().getColumn(6).setCellEditor(new DefaultCellEditor(new JComboBox<>(Constants.ENTRY_YEAR_LEVELS)) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return true;
+            }
+        });
+
         // init controllers
         new StudentController(this);
     }
