@@ -5,6 +5,8 @@ import model.Constants;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class StudentsView extends JFrame {
     private JPanel contentPane;
@@ -44,6 +46,17 @@ public class StudentsView extends JFrame {
 
         popupMenu.add(popupMenuEdit);
         popupMenu.add(popupMenuDelete);
+
+        // add confirmation when quitting the form
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                int confirmed = JOptionPane.showConfirmDialog(null, "Any unsaved data will be lost.", "Exit Program?", JOptionPane.YES_NO_OPTION);
+
+                if (confirmed == JOptionPane.YES_OPTION) {
+                    dispose();
+                }
+            }
+        });
 
         // disable cell editing on date created (col 8)
         studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
