@@ -17,11 +17,15 @@ public class StudentsView extends JFrame {
     public JMenuItem popupMenuEdit;
     public JMenuItem popupMenuDelete;
 
+    public JMenuBar menuBar;
+    public JMenu aboutMenu;
+
     public JFormattedTextField entrySearch;
     public JButton entryAdd;
     public JButton entryDelete;
     public JButton adminSignOut;
     public JButton refresh;
+
 
     public StudentsView() {
         setTitle("Student Management");
@@ -55,6 +59,13 @@ public class StudentsView extends JFrame {
 
         popupMenu.add(popupMenuEdit);
         popupMenu.add(popupMenuDelete);
+
+        // Menu bar
+        menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        aboutMenu = new JMenu("About");
+        menuBar.add(aboutMenu);
 
         // disable cell editing on date created (col 8)
         studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {

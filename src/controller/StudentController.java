@@ -1,6 +1,7 @@
 package controller;
 
 import model.Constants;
+import view.AboutDialogView;
 import view.ErrorDialogView;
 import view.LoginView;
 import view.StudentEntryView;
@@ -42,6 +43,8 @@ public class StudentController {
 
                 if (confirmed == JOptionPane.YES_OPTION) {
                     view.dispose();
+                } else {
+                    view.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 }
             }
         });
@@ -71,7 +74,6 @@ public class StudentController {
 
         // listen to table cell updates
         view.tableModel.addTableModelListener(tableListener);
-
 
         // Table popup menu (context menu)
         view.popupMenu.addPopupMenuListener(new PopupMenuListener() {
@@ -110,6 +112,25 @@ public class StudentController {
             int col = view.studentsTable.getSelectedColumn();
 
             view.studentsTable.editCellAt(row, col);
+        });
+
+        // About menu
+        view.aboutMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent menuEvent) {
+                AboutDialogView about = new AboutDialogView();
+                about.setVisible(true);
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent menuEvent) {
+                // Ignore, auto-generated required method stub
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent menuEvent) {
+                // Ignore, auto-generated required method stub
+            }
         });
 
         // refresh the table

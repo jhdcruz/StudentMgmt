@@ -13,7 +13,7 @@
           <enabled value="true"/>
         </properties>
         <border type="empty">
-          <size top="10" left="5" bottom="5" right="5"/>
+          <size top="0" left="0" bottom="0" right="0"/>
         </border>
         <children>
           <toolbar id="8a4dd">
@@ -105,7 +105,7 @@
         <constraints border-constraint="Center"/>
         <properties/>
         <border type="empty">
-          <size top="5" left="5" bottom="5" right="5"/>
+          <size top="0" left="0" bottom="0" right="0"/>
         </border>
         <children>
           <scrollpane id="290fe" binding="tableScrollPane">
@@ -120,6 +120,8 @@
                 <properties>
                   <autoCreateRowSorter value="true"/>
                   <fillsViewportHeight value="true"/>
+                  <showHorizontalLines value="true"/>
+                  <showVerticalLines value="true"/>
                 </properties>
               </component>
             </children>
