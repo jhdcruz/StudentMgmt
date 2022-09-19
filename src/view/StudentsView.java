@@ -68,6 +68,14 @@ public class StudentsView extends JFrame {
         menuBar.add(aboutMenu);
 
         // disable cell editing on date created (col 8)
+        studentsTable.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JTextField()) {
+            @Override
+            public boolean isCellEditable(java.util.EventObject event) {
+                return false;
+            }
+        });
+
+        // disable cell editing on date created (col 8)
         studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
             @Override
             public boolean isCellEditable(java.util.EventObject event) {
