@@ -224,46 +224,51 @@ public class StudentController {
      */
     @SuppressWarnings("DuplicatedCode")
     public void deleteEntries() {
-        int proceed = JOptionPane.showConfirmDialog(view, "This action permanently deletes records, these actions are irreversible.", "Delete student records?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (view.studentsTable.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(view, "No row selected.", "Invalid Operation", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            int proceed = JOptionPane.showConfirmDialog(view, "This action permanently deletes records, these actions are irreversible.", "Delete student records?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
-        if (proceed == JOptionPane.YES_OPTION) {
-            Runnable runnable = () -> {
-                JTable table = view.studentsTable;
-                int[] selectedRows = table.getSelectedRows();
+            if (proceed == JOptionPane.YES_OPTION) {
+                Runnable runnable = () -> {
+                    JTable table = view.studentsTable;
+                    int[] selectedRows = table.getSelectedRows();
 
-                if (selectedRows != null) {
-                    try (FileReader in = new FileReader(Constants.DB_STUDENTS); FileWriter out = new FileWriter(Constants.DB_STUDENTS_TMP, true); BufferedReader reader = new BufferedReader(in)) {
-                        String line;
+                    if (selectedRows != null) {
+                        try (FileReader in = new FileReader(Constants.DB_STUDENTS); FileWriter out = new FileWriter(Constants.DB_STUDENTS_TMP, true); BufferedReader reader = new BufferedReader(in)) {
+                            String line;
 
-                        while ((line = reader.readLine()) != null) {
-                            // copy all lines except the ones that matches the id of the selected rows
-                            String finalLine = line;
-                            if (IntStream.of(selectedRows).noneMatch(i -> finalLine.contains(table.getValueAt(i, 0).toString()))) {
-                                out.write(line + System.lineSeparator());
-                            }
-                        }
-
-                        // delete old file and rename tmp file
-                        if (new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS))) {
-                            // temporarily remove table listener for rows removal
-                            view.tableModel.removeTableModelListener(tableListener);
-
-                            // remove selected rows from the table
-                            for (int i = selectedRows.length - 1; i >= 0; i--) {
-                                view.tableModel.removeRow(selectedRows[i]);
+                            while ((line = reader.readLine()) != null) {
+                                // copy all lines except the ones that matches the id of the selected rows
+                                String finalLine = line;
+                                if (IntStream.of(selectedRows).noneMatch(i -> finalLine.contains(table.getValueAt(i, 0).toString()))) {
+                                    out.write(line + System.lineSeparator());
+                                }
                             }
 
-                            // re-add table listener
-                            view.tableModel.addTableModelListener(tableListener);
-                        }
-                    } catch (Exception e) {
-                        new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
-                    }
-                } // if selectedRows != null
-            }; // runnable
+                            // delete old file and rename tmp file
+                            if (new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS))) {
+                                // temporarily remove table listener for rows removal
+                                view.tableModel.removeTableModelListener(tableListener);
 
-            new Thread(runnable).start();
-        } // if proceed == JOptionPane.YES_OPTION
+                                // remove selected rows from the table
+                                for (int i = selectedRows.length - 1; i >= 0; i--) {
+                                    view.tableModel.removeRow(selectedRows[i]);
+                                }
+
+                                // re-add table listener
+                                view.tableModel.addTableModelListener(tableListener);
+                            }
+                        } catch (Exception e) {
+                            new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
+                        }
+                    } // if selectedRows != null
+                }; // runnable
+
+                new Thread(runnable).start();
+            } // if proceed == JOptionPane.YES_OPTION
+        }
+
     }
 
     /**
