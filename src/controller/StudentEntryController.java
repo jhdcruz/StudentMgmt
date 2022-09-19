@@ -22,14 +22,19 @@ import java.util.Locale;
 public class StudentEntryController {
 
     private final StudentEntryView view;
+    private final DefaultTableModel tableModel;
+
     private Object[] newStudentRow;
+    private StudentModel newStudent;
 
     public StudentEntryController(StudentEntryView view, DefaultTableModel tableModel) {
         this.view = view;
+        this.tableModel = tableModel;
+
 
         // Listeners
         view.entrySubmit.addActionListener(actionEvent -> {
-            StudentModel newStudent = new StudentModel();
+            newStudent = new StudentModel();
 
             // use fixed locale to mitigate locale inconsistencies
             DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
@@ -43,8 +48,6 @@ public class StudentEntryController {
             newStudent.setYearLevel(view.getYearLevel());
             newStudent.setSection(view.getSection());
             newStudent.setEmail(view.getEmail());
-            newStudentRow = new Object[]{newStudent.getId(), newStudent.getEmail(), newStudent.getLastName(), newStudent.getFirstName(), newStudent.getMiddleName(), newStudent.getCourse(), newStudent.getYearLevel(), newStudent.getSection(), newStudent.getDateCreated()};
-
             // set current time & date with format
             newStudent.setDateCreated(dateFormat.format(new Date()));
 
@@ -53,7 +56,6 @@ public class StudentEntryController {
                 addEntry(newStudent);
 
                 view.dispose();
-                tableModel.addRow(Arrays.stream(newStudentRow).toArray());
             }
         });
 
@@ -168,12 +170,12 @@ public class StudentEntryController {
                 String[] row = line.split(Constants.DELIMITER);
 
                 // check if email already exists
-                if (row[1].equals(newStudentRow[1])) {
+                if (row[1].equals(newStudent.getEmail())) {
                     return false;
                 }
 
                 // check for duplicate student ID in column 0
-                if (row[0].equals(newStudentRow[0])) {
+                if (row[0].equals(newStudent.getId())) {
                     // regenerate student ID if it already exists
                     newStudentRow[0] = generateStudentId();
                 }
@@ -205,6 +207,7 @@ public class StudentEntryController {
                 //            Although refreshing the table will automatically fix
                 //            the order, it's better to keep it consistent.
                 out.write(newStudent.getId() + delimiter + newStudent.getEmail() + delimiter + newStudent.getLastName() + delimiter + newStudent.getFirstName() + delimiter + newStudent.getMiddleName() + delimiter + newStudent.getCourse() + delimiter + newStudent.getYearLevel() + delimiter + newStudent.getSection() + delimiter + newStudent.getDateCreated() + "\n");
+                tableModel.addRow(Arrays.stream(newStudentRow).toArray());
             } catch (IOException e) {
                 new ErrorDialogView(new Exception("An error occurred while adding a new student entry."));
             }
