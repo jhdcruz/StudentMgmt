@@ -9,6 +9,8 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -28,6 +30,8 @@ public class StudentEntryController {
         // Listeners
         view.entrySubmit.addActionListener(actionEvent -> {
             StudentModel newStudent = new StudentModel();
+
+            // use fixed locale to mitigate locale inconsistencies
             DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
             // grab input data from view
@@ -39,25 +43,25 @@ public class StudentEntryController {
             newStudent.setYearLevel(view.getYearLevel());
             newStudent.setSection(view.getSection());
             newStudent.setEmail(view.getEmail());
+            newStudentRow = new Object[]{newStudent.getId(), newStudent.getEmail(), newStudent.getLastName(), newStudent.getFirstName(), newStudent.getMiddleName(), newStudent.getCourse(), newStudent.getYearLevel(), newStudent.getSection(), newStudent.getDateCreated()};
 
             // set current time & date with format
             newStudent.setDateCreated(dateFormat.format(new Date()));
 
-            try {
-                if (validateEntry()) {
-                    addEntry(newStudent);
+            // add entry after validation checks
+            if (validateEntry()) {
+                addEntry(newStudent);
 
-                    view.dispose();
-                    tableModel.addRow(Arrays.stream(newStudentRow).toArray());
-                }
-            } catch (IOException e) {
-                new ErrorDialogView(new Exception("An error occurred while submitting student entry.\n" + e.getMessage()));
+                view.dispose();
+                tableModel.addRow(Arrays.stream(newStudentRow).toArray());
             }
         });
 
         view.entryCancel.addActionListener(actionEvent -> view.dispose());
         // close on ESCAPE key
         view.contentPane.registerKeyboardAction(actionEvent -> view.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        // submit on ENTER key
+        view.contentPane.registerKeyboardAction(actionEvent -> view.entrySubmit.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
@@ -75,6 +79,7 @@ public class StudentEntryController {
         boolean email = false;
         boolean section = false;
         boolean name = false;
+        boolean duplicates = false;
 
         if (view.getEmail().isEmpty()) {
             view.emptyEmail.setText("Email is required.");
@@ -129,8 +134,14 @@ public class StudentEntryController {
             view.emptySection.setText("");
         }
 
+        if (duplicateChecker()) {
+            duplicates = true;
+        } else {
+            view.emptyEmail.setText("Email already exists.");
+        }
+
         // return true if all fields are valid
-        return email && name && section;
+        return email && name && section && duplicates;
     }
 
     /**
@@ -145,15 +156,45 @@ public class StudentEntryController {
     }
 
     /**
+     * Check if student record already exists
+     *
+     * @return returns true if all fields are unique
+     */
+    public boolean duplicateChecker() {
+        try (FileReader in = new FileReader(Constants.DB_STUDENTS); BufferedReader reader = new BufferedReader(in)) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] row = line.split(Constants.DELIMITER);
+
+                // check if email already exists
+                if (row[1].equals(newStudentRow[1])) {
+                    return false;
+                }
+
+                // check for duplicate student ID in column 0
+                if (row[0].equals(newStudentRow[0])) {
+                    // regenerate student ID if it already exists
+                    newStudentRow[0] = generateStudentId();
+                }
+            }
+        } catch (IOException e) {
+            new ErrorDialogView(new Exception("Couldn't check for duplicate entries, try again later."));
+        }
+
+        return true;
+    }
+
+    /**
      * Add a new student to the database (students.txt)
      * This runs in a thread to avoid blocking the UI
      *
      * @param newStudent instance of a StudentModel
      */
-    public void addEntry(StudentModel newStudent) throws IOException {
+    public void addEntry(StudentModel newStudent) {
         Runnable write = () -> {
             // This is used for adding a new row to the table manually
-            newStudentRow = new Object[]{newStudent.getId(), newStudent.getEmail(), newStudent.getLastName(), newStudent.getFirstName(), newStudent.getMiddleName(), newStudent.getCourse(), newStudent.getYearLevel(), newStudent.getSection(), newStudent.getDateCreated()};
+            // instead of reading the file again
 
             try (FileWriter out = new FileWriter(Constants.DB_STUDENTS, true)) {
                 String delimiter = Constants.DELIMITER;
