@@ -10,6 +10,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -32,6 +34,18 @@ public class StudentController {
         getEntries(view.tableModel);
 
         // LISTENERS -----------------------------------
+
+        // add confirmation when quitting the form
+        view.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                int confirmed = JOptionPane.showConfirmDialog(null, "Any unsaved data will be lost.", "Exit Program?", JOptionPane.YES_NO_OPTION);
+
+                if (confirmed == JOptionPane.YES_OPTION) {
+                    view.dispose();
+                }
+            }
+        });
+
 
         // entry addition & modifications
         view.entryAdd.addActionListener(actionEvent -> newEntry());

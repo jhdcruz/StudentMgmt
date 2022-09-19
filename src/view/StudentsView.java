@@ -4,9 +4,8 @@ import controller.StudentController;
 import model.Constants;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class StudentsView extends JFrame {
     private JPanel contentPane;
@@ -34,8 +33,15 @@ public class StudentsView extends JFrame {
         setMinimumSize(getSize());
         pack();
 
+        // table model
         tableModel = new DefaultTableModel(Constants.TABLE_HEADERS, 0);
         studentsTable.setModel(tableModel);
+
+        // centering of table cells
+        DefaultTableCellRenderer centerCellRenderer = new DefaultTableCellRenderer();
+        centerCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        studentsTable.setDefaultRenderer(Object.class, centerCellRenderer);
+        studentsTable.getTableHeader().setDefaultRenderer(centerCellRenderer);
 
         // Popup menu (context menu)
         popupMenu = new JPopupMenu();
@@ -46,17 +52,6 @@ public class StudentsView extends JFrame {
 
         popupMenu.add(popupMenuEdit);
         popupMenu.add(popupMenuDelete);
-
-        // add confirmation when quitting the form
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                int confirmed = JOptionPane.showConfirmDialog(null, "Any unsaved data will be lost.", "Exit Program?", JOptionPane.YES_NO_OPTION);
-
-                if (confirmed == JOptionPane.YES_OPTION) {
-                    dispose();
-                }
-            }
-        });
 
         // disable cell editing on date created (col 8)
         studentsTable.getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(new JTextField()) {
