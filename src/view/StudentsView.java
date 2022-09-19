@@ -43,6 +43,9 @@ public class StudentsView extends JFrame {
         studentsTable.setDefaultRenderer(Object.class, centerCellRenderer);
         studentsTable.getTableHeader().setDefaultRenderer(centerCellRenderer);
 
+        // disallow moving of table columns
+        studentsTable.getTableHeader().setReorderingAllowed(false);
+
         // Popup menu (context menu)
         popupMenu = new JPopupMenu();
         studentsTable.setComponentPopupMenu(popupMenu);
