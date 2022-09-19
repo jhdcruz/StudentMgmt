@@ -166,7 +166,7 @@ public class StudentController {
             }
         };
 
-        new Thread(runnable).start();
+        SwingUtilities.invokeLater(runnable);
     }
 
 
@@ -195,7 +195,7 @@ public class StudentController {
             }
         };
 
-        new Thread(runnable).start();
+        SwingUtilities.invokeLater(runnable);
     }
 
     /**
@@ -237,7 +237,7 @@ public class StudentController {
             }
         };
 
-        new Thread(runnable).start();
+        SwingUtilities.invokeLater(runnable);
     }
 
     /**
@@ -294,7 +294,7 @@ public class StudentController {
                     } // if selectedRows != null
                 }; // runnable
 
-                new Thread(runnable).start();
+                SwingUtilities.invokeLater(runnable);
             }
         }
 
