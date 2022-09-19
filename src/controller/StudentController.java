@@ -144,9 +144,11 @@ public class StudentController {
      */
     public void searchEntries() {
         Runnable runnable = () -> {
+            // reset table to give way for matched entries
+            view.tableModel.setRowCount(0);
+
             try (FileReader in = new FileReader(Constants.DB_STUDENTS); BufferedReader reader = new BufferedReader(in)) {
-                // reset table to give way for matched entries
-                view.tableModel.setRowCount(0);
+                view.tableModel.removeTableModelListener(tableListener);
 
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -157,6 +159,8 @@ public class StudentController {
                         view.tableModel.addRow(data);
                     }
                 }
+
+                view.tableModel.addTableModelListener(tableListener);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -178,10 +182,14 @@ public class StudentController {
                 String line;
                 String[] studentEntry;
 
+                view.tableModel.removeTableModelListener(tableListener);
+
                 while ((line = reader.readLine()) != null) {
                     studentEntry = line.split(delimiter);
                     tableModel.addRow(studentEntry);
                 }
+
+                view.tableModel.addTableModelListener(tableListener);
             } catch (IOException e) {
                 new ErrorDialogView(new Exception("An error occurred while getting student entries."));
             }
@@ -287,7 +295,7 @@ public class StudentController {
                 }; // runnable
 
                 new Thread(runnable).start();
-            } // if proceed == JOptionPane.YES_OPTION
+            }
         }
 
     }
@@ -298,8 +306,14 @@ public class StudentController {
     public void refreshEntries() {
         DefaultTableModel tableModel = view.tableModel;
 
+        // temporarily remove table listener for rows removal
+        view.tableModel.removeTableModelListener(tableListener);
+
         tableModel.setRowCount(0);
         getEntries(tableModel);
+
+        // re-add table listener
+        view.tableModel.addTableModelListener(tableListener);
     }
 
     /**

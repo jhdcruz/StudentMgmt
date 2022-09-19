@@ -195,6 +195,7 @@ public class StudentEntryController {
         Runnable write = () -> {
             // This is used for adding a new row to the table manually
             // instead of reading the file again
+            newStudentRow = new Object[]{newStudent.getId(), newStudent.getEmail(), newStudent.getLastName(), newStudent.getFirstName(), newStudent.getMiddleName(), newStudent.getCourse(), newStudent.getYearLevel(), newStudent.getSection(), newStudent.getDateCreated()};
 
             try (FileWriter out = new FileWriter(Constants.DB_STUDENTS, true)) {
                 String delimiter = Constants.DELIMITER;
