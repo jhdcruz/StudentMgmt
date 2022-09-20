@@ -96,7 +96,7 @@ public class StudentEntryController {
             //noinspection ConstantConditions
             name = false;
             view.emptyNameFirst.setText("First name is required.");
-        } else if (!view.getNameFirst().matches("^[A-Za-z]+$")) {
+        } else if (!view.getNameFirst().matches("^[A-Za-z ]+$")) {
             //noinspection ConstantConditions
             name = false;
             view.emptyNameFirst.setText("Invalid first name.");
@@ -108,7 +108,7 @@ public class StudentEntryController {
         if (view.getNameMiddle().isEmpty()) {
             name = false;
             view.emptyNameMiddle.setText("Middle name is required.");
-        } else if (!view.getNameMiddle().matches("^[A-Za-z]+$")) {
+        } else if (!view.getNameMiddle().matches("^[A-Za-z ]+$")) {
             name = false;
             view.emptyNameMiddle.setText("Invalid middle name.");
         } else {
@@ -119,7 +119,7 @@ public class StudentEntryController {
         if (view.getNameLast().isEmpty()) {
             name = false;
             view.emptyNameLast.setText("Last name is required.");
-        } else if (!view.getNameLast().matches("^[A-Za-z]+$")) {
+        } else if (!view.getNameLast().matches("^[A-Za-z ]+$")) {
             name = false;
             view.emptyNameLast.setText("Invalid last name.");
         } else {
