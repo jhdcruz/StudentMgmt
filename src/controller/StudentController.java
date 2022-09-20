@@ -169,7 +169,6 @@ public class StudentController {
         SwingUtilities.invokeLater(runnable);
     }
 
-
     /**
      * Get student entries from file and add to table
      * this runs on a thread, presumably helps for large lists
@@ -263,36 +262,34 @@ public class StudentController {
                     JTable table = view.studentsTable;
                     int[] selectedRows = table.getSelectedRows();
 
-                    if (selectedRows != null) {
-                        try (FileReader in = new FileReader(Constants.DB_STUDENTS); FileWriter out = new FileWriter(Constants.DB_STUDENTS_TMP, true); BufferedReader reader = new BufferedReader(in)) {
-                            String line;
+                    try (FileReader in = new FileReader(Constants.DB_STUDENTS); FileWriter out = new FileWriter(Constants.DB_STUDENTS_TMP, true); BufferedReader reader = new BufferedReader(in)) {
+                        String line;
 
-                            while ((line = reader.readLine()) != null) {
-                                // copy all lines except the ones that matches the id of the selected rows
-                                String finalLine = line;
-                                if (IntStream.of(selectedRows).noneMatch(i -> finalLine.contains(table.getValueAt(i, 0).toString()))) {
-                                    out.write(line + System.lineSeparator());
-                                }
+                        while ((line = reader.readLine()) != null) {
+                            // copy all lines except the ones that matches the id of the selected rows
+                            String finalLine = line;
+                            if (IntStream.of(selectedRows).noneMatch(i -> finalLine.contains(table.getValueAt(i, 0).toString()))) {
+                                out.write(line + System.lineSeparator());
                             }
-
-                            // delete old file and rename tmp file
-                            if (new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS))) {
-                                // temporarily remove table listener for rows removal
-                                view.tableModel.removeTableModelListener(tableListener);
-
-                                // remove selected rows from the table
-                                for (int i = selectedRows.length - 1; i >= 0; i--) {
-                                    view.tableModel.removeRow(selectedRows[i]);
-                                }
-
-                                // re-add table listener
-                                view.tableModel.addTableModelListener(tableListener);
-                            }
-                        } catch (Exception e) {
-                            new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
                         }
-                    } // if selectedRows != null
-                }; // runnable
+
+                        // delete old file and rename tmp file
+                        if (new File(Constants.DB_STUDENTS_TMP).renameTo(new File(Constants.DB_STUDENTS))) {
+                            // temporarily remove table listener for rows removal
+                            view.tableModel.removeTableModelListener(tableListener);
+
+                            // remove selected rows from the table
+                            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                                view.tableModel.removeRow(selectedRows[i]);
+                            }
+
+                            // re-add table listener
+                            view.tableModel.addTableModelListener(tableListener);
+                        }
+                    } catch (Exception e) {
+                        new ErrorDialogView(new Exception("An error occurred while deleting student entries."));
+                    }
+                };
 
                 SwingUtilities.invokeLater(runnable);
             }
