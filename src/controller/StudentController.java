@@ -154,9 +154,19 @@ public class StudentController {
                 while ((line = reader.readLine()) != null) {
                     String[] data = line.split(delimiter);
 
-                    // Look for matches in all columns except the date
-                    if (IntStream.of(0, 1, 2, 3, 4, 5, 6, 7).anyMatch(i -> data[i].contains(view.getEntrySearch()))) {
+                    // combine names for search query
+                    String lastFirstMiddle = data[2] + " " + data[3] + " " + data[4]; // last, first, middle name
+                    String firstMiddleLast = data[3] + " " + data[4] + " " + data[2]; // first, middle, last name
+
+                    if (lastFirstMiddle.toLowerCase().contains(view.entrySearch.getText().toLowerCase())) {
                         view.tableModel.addRow(data);
+                    } else if (firstMiddleLast.toLowerCase().contains(view.entrySearch.getText().toLowerCase())) {
+                        view.tableModel.addRow(data);
+                    } else {
+                        // Look for matches in all columns except the date
+                        if (IntStream.range(0, 7).anyMatch(i -> data[i].contains(view.getEntrySearch()))) {
+                            view.tableModel.addRow(data);
+                        }
                     }
                 }
 
