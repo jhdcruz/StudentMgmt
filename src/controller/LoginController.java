@@ -5,6 +5,7 @@ import view.ErrorDialogView;
 import view.LoginView;
 import view.StudentsView;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class LoginController {
                 studentsView.setVisible(true);
                 return true;
             } else {
-                new ErrorDialogView(new Exception("Invalid credentials"));
+                JOptionPane.showMessageDialog(null, "Invalid username or password", "Invalid Credentials", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (IOException exception) {
